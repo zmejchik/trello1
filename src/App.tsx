@@ -17,5 +17,4 @@ function App(): JSX.Element {
     </div>
   );
 }
-let <a:number></a:number> = "5"
 export default App;
