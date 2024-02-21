@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 
 function App(): JSX.Element {
-  let a = "ffff" -  
   return (
     <div className="App">
       <header className="App-header">
