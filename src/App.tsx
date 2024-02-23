@@ -1,8 +1,10 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import logo from './logo.svg';
 import './App.css';
+import { Board } from './pages/Board/components/Board/Board';
 
-function App(): JSX.Element {
+function Home(): JSX.Element {
   return (
     <div className="App">
       <header className="App-header">
@@ -17,4 +19,14 @@ function App(): JSX.Element {
     </div>
   );
 }
+
+function App(): JSX.Element {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/board" element={<Board />} />
+    </Routes>
+  );
+}
+
 export default App;

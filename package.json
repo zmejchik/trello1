@@ -13,6 +13,7 @@
     "@types/react-dom": "^18.2.19",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-plugin-react": "^7.33.2",
     "husky": "^9.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
