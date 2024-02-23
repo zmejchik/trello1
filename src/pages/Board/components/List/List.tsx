@@ -30,4 +30,3 @@ export function List({ title, cards }: ListProps): JSX.Element {
     </div>
   );
 }
-  
