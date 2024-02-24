@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { List } from '../List/List';
 import './board.scss';
+import { Button } from '../Button/Button';
 
 export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -32,15 +33,15 @@ export function Board(): JSX.Element {
   ]);
   return (
     <>
-      <header>
+      <header className="board-header">
         <h1>{title}</h1>
       </header>
-      <div>
+      <div className="board-body">
         {lists.map((list) => (
           <List key={list.id} title={list.title} cards={list.cards} />
         ))}
+        <Button urlDestination="#" caption="Створити список" />
       </div>
-      <button>Створити список</button>
     </>
   );
 }
