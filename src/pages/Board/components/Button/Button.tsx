@@ -2,12 +2,11 @@ import React from 'react';
 import { IButton } from '../../../../common/interfaces/IButton';
 import './button.scss';
 
-export function Button({ urlDestination, caption }: IButton): JSX.Element {
+export function Button({ icon, caption, className, ...props }: IButton): JSX.Element {
   return (
-    <div>
-      <a href={urlDestination} className="button">
-        {caption}
-      </a>
-    </div>
+    <button {...props} type="button" className={`custom-button ${className}`}>
+      {icon && icon}
+      {caption}
+    </button>
   );
 }

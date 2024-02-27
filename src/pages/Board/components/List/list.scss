@@ -1,17 +1,15 @@
 .list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: baseline;
   width: 23%;
   background-color: rgb(46, 46, 115);
   padding: 1%;
   border: thick double #32a1ce;
+  min-width: 300px;
+  border-radius: 20px;
 }
 .list-title {
   width: 90%;
-  margin-left: auto;
-  margin-right: auto;
   text-shadow:
     -1px -1px #fff,
     -2px -2px #fff,
@@ -27,15 +25,14 @@
     3px -3px 2px #bbb;
   color: steelblue;
   font-size: 30px;
-  
+  text-align: center;
 }
 .list-body {
+  display: flex;
+  flex-direction: column;
   width: 90%;
-  margin-left: auto;
-  margin-right: auto;
   margin-bottom: 20px;
   float: left;
-  background: #9479fa;
 }
 .list-button {
   width: 90%;

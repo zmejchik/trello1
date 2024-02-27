@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { List } from '../List/List';
-import './board.scss';
+import { FaSquarePlus } from 'react-icons/fa6';
 import { Button } from '../Button/Button';
+import List from '../List/List';
+import './board.scss';
 
 export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [title, setTitle] = useState('Моя тестова дошка');
+  const [boardTitle, setTitle] = useState('Моя тестова дошка');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lists, setLists] = useState([
     {
@@ -15,6 +16,7 @@ export function Board(): JSX.Element {
         { id: 1, title: 'помити кота' },
         { id: 2, title: 'приготувати суп' },
         { id: 3, title: 'сходити в магазин' },
+        { id: 4, title: 'зварити собаку' },
       ],
     },
     {
@@ -32,16 +34,16 @@ export function Board(): JSX.Element {
     },
   ]);
   return (
-    <>
+    <div>
       <header className="board-header">
-        <h1>{title}</h1>
+        <h1>{boardTitle}</h1>
       </header>
       <div className="board-body">
-        {lists.map((list) => (
-          <List key={list.id} title={list.title} cards={list.cards} />
+        {lists.map(({ id, title: listTitle, cards }) => (
+          <List key={id} title={listTitle} cards={cards} />
         ))}
-        <Button urlDestination="#" caption="Створити список" />
+        <Button icon={<FaSquarePlus />} caption="Створити список" className="board-button" />
       </div>
-    </>
+    </div>
   );
 }
