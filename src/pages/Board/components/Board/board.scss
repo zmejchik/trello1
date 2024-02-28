@@ -1,6 +1,7 @@
 .board-header {
   display: flex;
   justify-content: center;
+  align-items: center;
   text-shadow:
     -1px -1px #fff,
     -2px -2px #fff,
@@ -29,6 +30,27 @@
 .board-button{
   width: fit-content;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  border-radius: 10px;
+  border-style: double;
+  font-size: x-large;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px;
+  transition: background-color 0.3s;
+  &:hover{
+    background-color: #1b05aa;
+  }
+}
+.board-button-back{
+  position: fixed;
+  left:20px;
+  width: fit-content;
   display: flex;
   flex-direction: column;
   color: #fff;
