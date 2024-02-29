@@ -1,7 +1,7 @@
 .board-header {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   text-shadow:
     -1px -1px #fff,
     -2px -2px #fff,
@@ -33,6 +33,7 @@
   display: flex;
   flex-direction: column;
   color: #fff;
+  background-color: #673ab7;
   padding: 1rem 1.5rem;
   text-decoration: none;
   border-radius: 10px;
@@ -54,6 +55,7 @@
   display: flex;
   flex-direction: column;
   color: #fff;
+  background-color: #673ab7;
   padding: 1rem 1.5rem;
   text-decoration: none;
   border-radius: 10px;

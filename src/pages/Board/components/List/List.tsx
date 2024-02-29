@@ -3,9 +3,9 @@ import { FaSquarePlus } from 'react-icons/fa6';
 import './list.scss';
 import Button from '../Button/Button';
 import { Card } from '../Card/Card';
-import { IListProps } from '../../../../common/interfaces/IList';
+import { IList } from '../../../../common/interfaces/IList';
 
-function List({ title, cards }: IListProps): JSX.Element {
+function List({ title, cards }: IList): JSX.Element {
   return (
     <div className="list">
       <h2 className="list-title">{title}</h2>

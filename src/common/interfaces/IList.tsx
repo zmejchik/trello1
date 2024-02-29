@@ -1,6 +1,6 @@
 import { ICard } from './ICard';
 
-export interface IListProps {
+export interface IList {
   title: string;
   cards: ICard[];
 }

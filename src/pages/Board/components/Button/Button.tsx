@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { IButton } from '../../../../common/interfaces/IButton';
+import './button.scss';
 
 function Button({ icon, caption, className, to }: IButton): JSX.Element {
   // Если есть ссылка, то используем компонент Link, иначе обычный button
   if (to) {
     return (
-      <Link to={to} className={`custom-button ${className}`}>
+      <Link to={to}>
         <button type="button" className={`custom-button ${className}`}>
           {icon && icon}
           {caption}
