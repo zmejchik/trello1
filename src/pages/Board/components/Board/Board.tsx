@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 
-import { Button } from '../Button/Button';
+import Button from '../Button/Button';
 import List from '../List/List';
 import './board.scss';
 
@@ -38,7 +38,7 @@ export function Board(): JSX.Element {
   return (
     <div>
       <header className="board-header">
-        <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className="board-button-back" />
+        <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className="board-button-back" to="/" />
         <h1>{boardTitle}</h1>
       </header>
       <div className="board-body">
