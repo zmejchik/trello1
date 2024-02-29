@@ -1,14 +1,9 @@
 import React from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
-import { ICard } from '../../../../common/interfaces/ICard';
 import './list.scss';
 import Button from '../Button/Button';
 import { Card } from '../Card/Card';
-
-interface IListProps {
-  title: string;
-  cards: ICard[];
-}
+import { IListProps } from '../../../../common/interfaces/IList';
 
 function List({ title, cards }: IListProps): JSX.Element {
   return (
