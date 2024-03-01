@@ -1,5 +1,6 @@
 {
-  "name": "trello1",
+  "name": "trello",
+  "homepage": "https://zmejchik.github.io/trello",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -15,6 +16,7 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-plugin-react": "^7.33.2",
+    "gh-pages": "^6.1.1",
     "husky": "^9.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -33,6 +35,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prepare": "husky && husky install",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "lint": "npx eslint src/ --color",
     "lint:fix": "npx eslint src/ --fix --color"
   },
