@@ -1,6 +1,6 @@
 {
   "name": "trello",
-  "homepage": "https://zmejchik.github.io/board",
+  "homepage": "https://zmejchik.github.io/trello",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
