@@ -1,12 +1,13 @@
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
+The project implements a clone of the Trello service. At this stage, a board with a list and cards was created. 
+Only the "Dome" button works. Other buttons are not clickable. Created components Button, List, Card, Board
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm run start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
