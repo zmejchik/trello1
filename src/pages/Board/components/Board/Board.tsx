@@ -4,7 +4,7 @@ import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 
 import Button from '../Button/Button';
 import List from '../List/List';
-import './board.scss';
+import s from './board.module.scss';
 
 export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -37,15 +37,15 @@ export function Board(): JSX.Element {
   ]);
   return (
     <div>
-      <header className="board-header">
-        <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className="board-button-back" to="/" />
+      <header className={s.board_header}>
+        <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className={s.board_button_back} to="/" />
         <h1>{boardTitle}</h1>
       </header>
-      <div className="board-body">
+      <div className={s.board_body}>
         {lists.map(({ id, title: listTitle, cards }) => (
           <List key={id} title={listTitle} cards={cards} />
         ))}
-        <Button icon={<FaSquarePlus />} caption="Створити список" className="board-button" />
+        <Button icon={<FaSquarePlus />} caption="Створити список" className={s.board_button} />
       </div>
     </div>
   );

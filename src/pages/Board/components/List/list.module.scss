@@ -8,7 +8,7 @@
   min-width: 300px;
   border-radius: 20px;
 }
-.list-title {
+.list_title {
   width: 90%;
   text-shadow:
     -1px -1px #fff,
@@ -27,14 +27,14 @@
   font-size: 40px;
   text-align: center;
 }
-.list-body {
+.list_body {
   display: flex;
   flex-direction: column;
   width: 90%;
   margin-bottom: 20px;
   float: left;
 }
-.list-button {
+.list_button {
   width: 90%;
   display: flex;
   margin-left: auto;

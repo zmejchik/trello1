@@ -1,4 +1,4 @@
-.board-header {
+.board_header {
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -22,12 +22,12 @@
     color: yellowgreen;
   }
 }
-.board-body {
+.board_body {
   display: flex;
   justify-content: space-evenly;
   overflow-x: auto;
 }
-.board-button{
+.board_button{
   width: fit-content;
   height: 100%;
   display: flex;
@@ -48,7 +48,7 @@
     background-color: #1b05aa;
   }
 }
-.board-button-back{
+.board_button_back{
   position: fixed;
   left:20px;
   width: fit-content;
