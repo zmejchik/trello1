@@ -18,21 +18,22 @@
   align-items: flex-start;
   width:300px;
   text-shadow:
-    -1px -1px #fff,
-    -2px -2px #fff,
-    -1px 1px #fff,
-    -2px 2px #fff,
-    1px 1px #fff,
-    2px 2px #fff,
-    1px -1px #fff,
-    2px -2px #fff,
-    -3px -3px 2px #bbb,
-    -3px 3px 2px #bbb,
-    3px 3px 2px #bbb,
-    3px -3px 2px #bbb;
+    -4px -4px #fff,
+    -6px -6px #fff,
+    -4px 4px #fff,
+    -6px 6px #fff,
+    4px 4px #fff,
+    6px 6px #fff,
+    4px -4px #fff,
+    6px -6px #fff,
+    -4px -4px 3px #bbb,
+    -4px 4px 3px #bbb,
+    4px 4px 3px #bbb,
+    4px -4px 3px #bbb;
   color: steelblue;
   font-size: 15px;
   transition: all 1s;
+  border-radius: 10px;
   &:hover {
     color: yellowgreen;
   }
