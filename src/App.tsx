@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import { Board } from './pages/Home/components/Board/Board';
+import { Board } from './pages/Board/Board';
 import { Home } from './pages/Home/Home';
 
 function App(): JSX.Element {

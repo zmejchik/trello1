@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  text-shadow:
+    -1px -1px #fff,
+    -2px -2px #fff,
+    -1px 1px #fff,
+    -2px 2px #fff,
+    1px 1px #fff,
+    2px 2px #fff,
+    1px -1px #fff,
+    2px -2px #fff,
+    -3px -3px 2px #bbb,
+    -3px 3px 2px #bbb,
+    3px 3px 2px #bbb,
+    3px -3px 2px #bbb;
+  color: steelblue;
+  font-size: 20px;
+  transition: all 1s;
+  &:hover {
+    color: yellowgreen;
+  }
+}
+.home_body {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
