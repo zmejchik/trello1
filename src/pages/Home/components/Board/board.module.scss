@@ -1,7 +1,22 @@
+.board {
+  max-width: 330px;
+  padding: 20px;
+  margin: 0 auto;
+  text-align: center;
+  border: 1px solid rgba(128, 128, 128, 0.37);
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  background-image: linear-gradient(-180deg, #ebebeb 0%, #dcdddf 48%, #c4c5c7 99%);
+  box-shadow:
+    0 16px 28px 0 rgba(0, 0, 0, 0.22),
+    0 25px 55px 0 rgba(0, 0, 0, 0.21);
+}
 .board_header {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  width:300px;
   text-shadow:
     -1px -1px #fff,
     -2px -2px #fff,
@@ -16,57 +31,9 @@
     3px 3px 2px #bbb,
     3px -3px 2px #bbb;
   color: steelblue;
-  font-size: 20px;
+  font-size: 15px;
   transition: all 1s;
-  &:hover{
+  &:hover {
     color: yellowgreen;
-  }
-}
-.board_body {
-  display: flex;
-  justify-content: space-evenly;
-  overflow-x: auto;
-}
-.board_button{
-  width: fit-content;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  background-color: #673ab7;
-  padding: 1rem 1.5rem;
-  text-decoration: none;
-  border-radius: 10px;
-  border-style: double;
-  font-size: x-large;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  margin: 20px;
-  transition: background-color 0.3s;
-  &:hover{
-    background-color: #1b05aa;
-  }
-}
-.board_button_back{
-  position: fixed;
-  left:20px;
-  width: fit-content;
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  background-color: #673ab7;
-  padding: 1rem 1.5rem;
-  text-decoration: none;
-  border-radius: 10px;
-  border-style: double;
-  font-size: x-large;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  margin: 20px;
-  transition: background-color 0.3s;
-  &:hover{
-    background-color: #1b05aa;
   }
 }

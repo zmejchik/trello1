@@ -7,7 +7,7 @@ interface IBoard {
 }
 export function Board({ title, style }: IBoard): JSX.Element {
   return (
-    <div style={style}>
+    <div className={s.board} style={style}>
       <header className={s.board_header}>
         <h2>{title}</h2>
       </header>
