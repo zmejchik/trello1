@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
-
+import { useParams } from 'react-router-dom';
 import Button from './components/Button/Button';
 import List from './components/List/List';
 import s from './board.module.scss';
@@ -35,11 +35,15 @@ export function Board(): JSX.Element {
       ],
     },
   ]);
+
+  const { boardId } = useParams();
   return (
     <div>
       <header className={s.board_header}>
-        <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className={s.board_button_back} to="/trello" />
-        <h1>{boardTitle}</h1>
+        <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className={s.board_button_back} to="/" />
+        <h1>
+          {boardTitle} With id {boardId}
+        </h1>
       </header>
       <div className={s.board_body}>
         {lists.map(({ id, title: listTitle, cards }) => (

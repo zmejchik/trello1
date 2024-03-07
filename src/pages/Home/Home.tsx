@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
-import { Board } from './components/Board/Board';
+import { Link } from 'react-router-dom';
+import { Board } from './components/Board/BoardPrewiew';
 import s from './Home.module.scss';
 import Button from '../Board/components/Button/Button';
 
@@ -21,7 +22,9 @@ export function Home(): JSX.Element {
       </header>
       <div className={s.home_body}>
         {boards.map(({ id, title, custom }) => (
-          <Board key={id} title={title} style={custom} />
+          <Link to={`/board/${id}`} key={id}>
+            <Board key={id} title={title} style={custom} />
+          </Link>
         ))}
         <Button icon={<FaSquarePlus />} caption="Створити дошку" className={s.board_button} />
       </div>

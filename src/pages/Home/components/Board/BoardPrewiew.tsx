@@ -1,5 +1,5 @@
 import React from 'react';
-import s from './board.module.scss';
+import s from './boardPrewiew.module.scss';
 
 interface IBoard {
   title: string;

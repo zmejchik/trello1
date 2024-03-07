@@ -7,8 +7,8 @@ import { Home } from './pages/Home/Home';
 function App(): JSX.Element {
   return (
     <Routes>
-      <Route path="/trello" element={<Home />} />
-      <Route path="/trello/board" element={<Board />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/board/:boardId" element={<Board />} />
     </Routes>
   );
 }
