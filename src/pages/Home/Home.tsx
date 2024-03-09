@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { Board } from './components/Board/BoardPrewiew';
 import s from './Home.module.scss';
 import Button from '../Board/components/Button/Button';
+import api from '../../api/request';
+import baseURL from '../../common/constants/api';
+import { IBoard } from '../../common/interfaces/IBoard';
 
 export function Home(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [homeTitle, setTitle] = useState('Мої дошки');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [boards, setBords] = useState([
+  const [boards, setBoards] = useState<IBoard[]>([
     { id: 1, title: 'покупки', custom: { background: 'red' } },
     { id: 2, title: 'підготовка до весілля', custom: { background: 'green' } },
     { id: 3, title: 'розробка інтернет-магазину', custom: { background: 'blue' } },
     { id: 4, title: 'курс по просуванню у соцмережах', custom: { background: 'grey' } },
   ]);
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      try {
+        const data: { boards: IBoard[] } = await api.get(`${baseURL.baseURL}/board`);
+        setBoards(data.boards);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching boards:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div>
       <header className={s.header}>
