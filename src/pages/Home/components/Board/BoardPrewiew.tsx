@@ -5,7 +5,7 @@ interface IBoard {
   title: string;
   style: object;
 }
-export function Board({ title, style }: IBoard): JSX.Element {
+export function BoardPreview({ title, style }: IBoard): JSX.Element {
   return (
     <div className={s.board} style={style}>
       <header className={s.board_header}>
