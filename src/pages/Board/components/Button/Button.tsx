@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { IButton } from '../../../../common/interfaces/IButton';
 import s from './button.module.scss';
 
-function Button({ icon, caption, className, to }: IButton): JSX.Element {
+function Button({ icon, caption, className, to, onClick }: IButton): JSX.Element {
   // Если есть ссылка, то используем компонент Link, иначе обычный button
   if (to) {
     return (
@@ -17,7 +17,7 @@ function Button({ icon, caption, className, to }: IButton): JSX.Element {
   }
 
   return (
-    <button type="button" className={`${s.custom_button} ${className}`}>
+    <button type="button" className={`${s.custom_button} ${className}`} onClick={onClick}>
       {icon && icon}
       {caption}
     </button>
@@ -29,6 +29,7 @@ Button.defaultProps = {
   className: '',
   to: '',
   caption: '',
+  onClick: (): void => {},
 };
 
 export default Button;

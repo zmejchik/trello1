@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FaSquarePlus } from 'react-icons/fa6';
+import React, { ReactNode, useEffect, useState } from 'react'; 
+import { FaSquarePlus } from 'react-icons/fa6'; 
 import { Link } from 'react-router-dom';
 import { BoardPreview } from './components/Board/BoardPrewiew';
 import s from './Home.module.scss';
@@ -7,16 +7,38 @@ import Button from '../Board/components/Button/Button';
 import api from '../../api/request';
 import { IBoard } from '../../common/interfaces/IBoard';
 
+interface ModalProps {
+  visible: boolean;
+  title: string;
+  content: ReactNode | string;
+  footer: ReactNode | string;
+  onClose: () => void;
+}
+
+function Modal({ visible = false, title = '', content = '', footer = '', onClose }: ModalProps): JSX.Element | null {
+  if (!visible) return null;
+
+  return (
+    <div className={s.modal} onClick={onClose}>
+      <div className={s.modal_dialog} onClick={(e): void => e.stopPropagation()}>
+        <div className={s.modal_header}>
+          <h3 className={s.modal_title}>{title}</h3>
+          <span className={s.modal_close} onClick={onClose}>
+            &times;
+          </span>
+        </div>
+        <div className={s.modal_body}>
+          <div className={s.modal_content}>{content}</div>
+        </div>
+        {footer && <div className={s.modal_footer}>{footer}</div>}
+      </div>
+    </div>
+  );
+}
+
 export function Home(): JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [homeTitle, setTitle] = useState('Мої дошки');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [boards, setBoards] = useState<IBoard[]>([
-    { id: 1, title: 'покупки', custom: { background: 'red' } },
-    { id: 2, title: 'підготовка до весілля', custom: { background: 'green' } },
-    { id: 3, title: 'розробка інтернет-магазину', custom: { background: 'blue' } },
-    { id: 4, title: 'курс по просуванню у соцмережах', custom: { background: 'grey' } },
-  ]);
+  const [boards, setBoards] = useState<IBoard[]>([]);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -24,13 +46,30 @@ export function Home(): JSX.Element {
         const data: { boards: IBoard[] } = await api.get(`/board`);
         setBoards(data.boards);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Error fetching boards:', error);
       }
     };
 
     fetchData();
   }, []);
+
+  const [isModal, setModal] = useState(false);
+
+  const createBoard = async (title: string, custom: object): Promise<void> => {
+    try {
+      await api.post(`/board`, {
+        title,
+        custom,
+      });
+      setModal(false);
+      const data: { boards: IBoard[] } = await api.get(`/board`);
+      setBoards(data.boards);
+    } catch (error) {
+      console.error('Error fetching boards:', error);
+    }
+  };
+
+  const onClose = (): void => setModal(!isModal);
 
   return (
     <div>
@@ -43,8 +82,20 @@ export function Home(): JSX.Element {
             <BoardPreview key={id} title={title} style={custom} />
           </Link>
         ))}
-        <Button icon={<FaSquarePlus />} caption="Створити дошку" className={s.board_button} />
+        <Button
+          icon={<FaSquarePlus />}
+          caption="Створити дошку"
+          className={s.board_button}
+          onClick={() => setModal(true)}
+        />
       </div>
+      <Modal
+        visible={isModal}
+        title="Введіть назву нової дошки"
+        content={<p />}
+        footer={<button onClick={() => createBoard('Нова дошка', { background: 'white' })}>Створити</button>}
+        onClose={onClose}
+      />
     </div>
   );
 }
