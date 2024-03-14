@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect, useState } from 'react'; 
-import { FaSquarePlus } from 'react-icons/fa6'; 
+import React, { ReactNode, useEffect, useState } from 'react';
+import { FaSquarePlus } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { BoardPreview } from './components/Board/BoardPrewiew';
 import s from './Home.module.scss';
@@ -10,12 +10,14 @@ import { IBoard } from '../../common/interfaces/IBoard';
 interface ModalProps {
   visible: boolean;
   title: string;
-  content: ReactNode | string;
+  value1: string;
   footer: ReactNode | string;
   onClose: () => void;
+  setValue1: (event: string) => void;
 }
 
-function Modal({ visible = false, title = '', content = '', footer = '', onClose }: ModalProps): JSX.Element | null {
+function Modal({ visible = false, title = '', value1, setValue1, footer = '', onClose }: ModalProps): JSX.Element | null {
+
   if (!visible) return null;
 
   return (
@@ -28,7 +30,9 @@ function Modal({ visible = false, title = '', content = '', footer = '', onClose
           </span>
         </div>
         <div className={s.modal_body}>
-          <div className={s.modal_content}>{content}</div>
+          <div className={s.modal_content}>
+            <input value={value1} onChange={(event) => setValue1(event.target.value)} />
+          </div>
         </div>
         {footer && <div className={s.modal_footer}>{footer}</div>}
       </div>
@@ -39,6 +43,7 @@ function Modal({ visible = false, title = '', content = '', footer = '', onClose
 export function Home(): JSX.Element {
   const [homeTitle, setTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);
+  const [value1, setValue1] = useState("");
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -92,8 +97,9 @@ export function Home(): JSX.Element {
       <Modal
         visible={isModal}
         title="Введіть назву нової дошки"
-        content={<p />}
-        footer={<button onClick={() => createBoard('Нова дошка', { background: 'white' })}>Створити</button>}
+        value1={value1}
+        setValue1={setValue1}
+        footer={<button onClick={() => createBoard(value1, { background: 'white' })}>Створити</button>}
         onClose={onClose}
       />
     </div>
