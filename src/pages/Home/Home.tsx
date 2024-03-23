@@ -20,6 +20,7 @@ export function Home(): JSX.Element {
         const data: { boards: IBoard[] } = await api.get(`/board`);
         setBoards(data.boards);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching boards:', error);
       }
     };
@@ -39,6 +40,7 @@ export function Home(): JSX.Element {
       const data: { boards: IBoard[] } = await api.get(`/board`);
       setBoards(data.boards);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching boards:', error);
     }
   };

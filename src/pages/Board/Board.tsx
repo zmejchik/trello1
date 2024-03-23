@@ -7,6 +7,7 @@ import List from './components/List/List';
 import s from './board.module.scss';
 import api from '../../api/request';
 import { IList } from '../../common/interfaces/IList';
+import { Modal } from '../../common/components/Modal';
 
 export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -37,6 +38,7 @@ export function Board(): JSX.Element {
       ],
     },
   ]);
+  const [value, setValue] = useState('');
 
   const { boardId } = useParams();
 
@@ -53,6 +55,25 @@ export function Board(): JSX.Element {
 
     fetchData();
   }, []);
+
+  const [isModal, setModal] = useState(false);
+
+  const createList = async (title: string): Promise<void> => {
+    try {
+      await api.post(`/board/${boardId}/list`, {
+        title,
+        position: lists.length ? lists.length + 1 : 1,
+      });
+      setModal(false);
+      const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
+      console.log(data);
+      setLists(data.lists);
+    } catch (error) {
+      console.error('Error fetching boards:', error);
+    }
+  };
+
+  const onClose = (): void => setModal(!isModal);
   return (
     <div>
       <header className={s.board_header}>
@@ -65,8 +86,21 @@ export function Board(): JSX.Element {
         {lists.map(({ id, title: listTitle, cards }) => (
           <List key={id} id={id} title={listTitle} cards={cards} />
         ))}
-        <Button icon={<FaSquarePlus />} caption="Створити список" className={s.board_button} />
+        <Button
+          icon={<FaSquarePlus />}
+          caption="Створити список"
+          className={s.board_button}
+          onClick={(): void => setModal(true)}
+        />
       </div>
+      <Modal
+        visible={isModal}
+        title="Введіть назву нового списку"
+        inputValue={value}
+        setValue={setValue}
+        footer={<button onClick={(): Promise<void> => createList(value)}>Створити</button>}
+        onClose={onClose}
+      />
     </div>
   );
 }
