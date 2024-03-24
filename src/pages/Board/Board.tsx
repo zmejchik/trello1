@@ -66,9 +66,9 @@ export function Board(): JSX.Element {
       });
       setModal(false);
       const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
-      console.log(data);
       setLists(data.lists);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching boards:', error);
     }
   };

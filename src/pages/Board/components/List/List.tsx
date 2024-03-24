@@ -12,6 +12,7 @@ import { ICard } from '../../../../common/interfaces/ICard';
 function List({ id, title, cards }: IList): JSX.Element {
   const [value, setValue] = useState('');
   const [isModal, setModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lists, setLists] = useState<IList[]>([]);
   const onClose = (): void => setModal(!isModal);
   const { boardId } = useParams();
@@ -23,17 +24,17 @@ function List({ id, title, cards }: IList): JSX.Element {
         setLists(data.lists);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Error fetching cards:', error);
+        console.error('Error fetching boards:', error);
       }
     };
 
     fetchData();
   }, []);
 
-  const createCard = async ({ title }: { title: string }): Promise<void> => {
+  const createCard = async (titleCard: string): Promise<void> => {
     try {
       await api.post(`/board/${boardId}/card/`, {
-        title,
+        title: titleCard,
         list_id: id,
         position: cards.length ? cards.length + 1 : 1,
         description: 'washing process',
@@ -55,8 +56,8 @@ function List({ id, title, cards }: IList): JSX.Element {
       <div className={s.list}>
         <h2 className={s.list_title}>{title}</h2>
         <div className={s.list_body}>
-          {cards.map(({ id, title: cardTitle }) => (
-            <Card key={id} id={id} title={cardTitle} />
+          {cards.map(({ id: cardId, title: titleCard }: ICard) => (
+            <Card key={cardId} id={cardId} title={titleCard} />
           ))}
         </div>
         <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />
@@ -66,7 +67,7 @@ function List({ id, title, cards }: IList): JSX.Element {
         title="Введіть назву нового списку"
         inputValue={value}
         setValue={setValue}
-        footer={<button onClick={(): Promise<void> => createCard({ title: value })}>Створити</button>}
+        footer={<button onClick={(): Promise<void> => createCard(value)}>Створити</button>}
         onClose={onClose}
       />
     </>
