@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { useParams } from 'react-router-dom';
 import s from './list.module.scss';
@@ -9,27 +9,12 @@ import { IList } from '../../../../common/interfaces/IList';
 import { Modal } from '../../../../common/components/Modal';
 import { ICard } from '../../../../common/interfaces/ICard';
 
-function List({ id, title, cards }: IList): JSX.Element {
+function List({ id, title, cards: cardsArray }: IList): JSX.Element {
   const [value, setValue] = useState('');
   const [isModal, setModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [lists, setLists] = useState<IList[]>([]);
+  const [cards, setcards] = useState(cardsArray);
   const onClose = (): void => setModal(!isModal);
   const { boardId } = useParams();
-
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      try {
-        const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-        setLists(data.lists);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching boards:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const createCard = async (titleCard: string): Promise<void> => {
     try {
@@ -44,7 +29,8 @@ function List({ id, title, cards }: IList): JSX.Element {
       });
       setModal(false);
       const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      setLists(data.lists);
+      const newCards = data.lists.find((list) => list.id === id)?.cards || [];
+      setcards(newCards);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching boards:', error);

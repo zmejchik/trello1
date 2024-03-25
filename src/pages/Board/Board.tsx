@@ -39,7 +39,7 @@ export function Board(): JSX.Element {
     },
   ]);
   const [value, setValue] = useState('');
-
+  const [isModal, setModal] = useState(false);
   const { boardId } = useParams();
 
   useEffect(() => {
@@ -55,8 +55,6 @@ export function Board(): JSX.Element {
 
     fetchData();
   }, []);
-
-  const [isModal, setModal] = useState(false);
 
   const createList = async (title: string): Promise<void> => {
     try {
