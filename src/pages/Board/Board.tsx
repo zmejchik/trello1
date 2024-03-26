@@ -13,31 +13,7 @@ export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [boardTitle, setTitle] = useState('Моя тестова дошка');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [lists, setLists] = useState<IList[]>([
-    {
-      id: 1,
-      title: 'Плани',
-      cards: [
-        { id: 1, title: 'помити кота' },
-        { id: 2, title: 'приготувати суп' },
-        { id: 3, title: 'сходити в магазин' },
-        { id: 4, title: 'зварити собаку' },
-      ],
-    },
-    {
-      id: 2,
-      title: 'В процесі',
-      cards: [{ id: 4, title: 'подивитися серіал' }],
-    },
-    {
-      id: 3,
-      title: 'Зроблено',
-      cards: [
-        { id: 5, title: 'зробити домашку' },
-        { id: 6, title: 'погуляти з собакой' },
-      ],
-    },
-  ]);
+  const [lists, setLists] = useState<IList[]>([]);
   const [value, setValue] = useState('');
   const [isModal, setModal] = useState(false);
   const { boardId } = useParams();

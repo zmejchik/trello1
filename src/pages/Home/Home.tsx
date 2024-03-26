@@ -13,7 +13,8 @@ export function Home(): JSX.Element {
   const [homeTitle, setTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);
   const [value, setValue] = useState('');
-
+  const [isModal, setModal] = useState(false);
+  const onClose = (): void => setModal(!isModal);
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
@@ -28,24 +29,31 @@ export function Home(): JSX.Element {
     fetchData();
   }, []);
 
-  const [isModal, setModal] = useState(false);
-
-  const createBoard = async (title: string, custom: object): Promise<void> => {
-    try {
-      await api.post(`/board`, {
-        title,
-        custom,
-      });
-      setModal(false);
-      const data: { boards: IBoard[] } = await api.get(`/board`);
-      setBoards(data.boards);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching boards:', error);
-    }
+  const isValidBoardName = (title: string): boolean => {
+    if (title === '') return false;
+    const pattern = /^[a-zA-Zа-яА-Я0-9\s.-_]+$/;
+    return pattern.test(title);
   };
 
-  const onClose = (): void => setModal(!isModal);
+  const createBoard = async (title: string, custom: object): Promise<void> => {
+    if (isValidBoardName(title)) {
+      try {
+        await api.post(`/board`, {
+          title,
+          custom,
+        });
+        setModal(false);
+        const data: { boards: IBoard[] } = await api.get(`/board`);
+        setBoards(data.boards);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching boards:', error);
+      }
+    } else {
+      // eslint-disable-next-line no-alert
+      alert('Incorect name board');
+    }
+  };
 
   return (
     <div>
