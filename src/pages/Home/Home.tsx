@@ -35,6 +35,13 @@ export function Home(): JSX.Element {
     return pattern.test(title);
   };
 
+  const generateRandomColor = (): string => {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
   const createBoard = async (title: string, custom: object): Promise<void> => {
     if (isValidBoardName(title)) {
       try {
@@ -78,7 +85,11 @@ export function Home(): JSX.Element {
         title="Введіть назву нової дошки"
         inputValue={value}
         setValue={setValue}
-        footer={<button onClick={(): Promise<void> => createBoard(value, { background: 'white' })}>Створити</button>}
+        footer={
+          <button onClick={(): Promise<void> => createBoard(value, { background: generateRandomColor() })}>
+            Створити
+          </button>
+        }
         onClose={onClose}
       />
     </div>
