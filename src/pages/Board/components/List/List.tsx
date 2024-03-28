@@ -6,7 +6,7 @@ import Button from '../Button/Button';
 import api from '../../../../api/request';
 import { Card } from '../Card/Card';
 import { IList } from '../../../../common/interfaces/IList';
-import { Modal } from '../../../../common/components/Modal';
+import { Modal } from '../../../../common/components/Modal/Modal';
 import { ICard } from '../../../../common/interfaces/ICard';
 
 function List({ id, title, cards: cardsArray }: IList): JSX.Element {

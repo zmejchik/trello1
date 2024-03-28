@@ -18,16 +18,20 @@
   color: steelblue;
   font-size: 20px;
   transition: all 1s;
-  &:hover{
+  &:hover {
     color: yellowgreen;
   }
+}
+
+.boardH1 {
+  display: flex;
 }
 .board_body {
   display: flex;
   justify-content: space-evenly;
   overflow-x: auto;
 }
-.board_button{
+.board_button {
   width: fit-content;
   height: 100%;
   display: flex;
@@ -44,13 +48,13 @@
   cursor: pointer;
   margin: 20px;
   transition: background-color 0.3s;
-  &:hover{
+  &:hover {
     background-color: #1b05aa;
   }
 }
-.board_button_back{
+.board_button_back {
   position: fixed;
-  left:20px;
+  left: 20px;
   width: fit-content;
   display: flex;
   flex-direction: column;
@@ -66,7 +70,59 @@
   cursor: pointer;
   margin: 20px;
   transition: background-color 0.3s;
-  &:hover{
+  &:hover {
     background-color: #1b05aa;
   }
+}
+
+// Font
+
+$font-m: 40px;
+$font-s: 40px;
+
+// Motif colors
+
+$motif-base: #ff79e6;
+$motif-low: #ffa6f7;
+$motif-dark: #892276;
+$motif-shadow: #ffe1f7;
+
+// Common colors
+
+$grey-high: #bdbdbd;
+$grey-base: #dbdbdb;
+$grey-low: #efefef;
+
+// SVG
+
+$svg-max-width: 180px;
+
+// Input
+
+$input-height: 48px;
+$input-width: 100%;
+$input-radius: 30px;
+$input-border: 1px solid $grey-base;
+$input-shadow: 0 3px 3px rgba(0, 0, 0, 0.05);
+
+// Spacing (margins && paddings)
+
+$space-xl: 36px;
+$space-l: 18px;
+$space-m: 12px;
+$space-s: 6px;
+
+.board_inputForEditionNameBoard {
+  width: $input-width;
+  height: 100%;
+  padding-left: $space-xl * 1.2;
+  padding-right: $space-m;
+  font-size: $font-m;
+  border-radius: $input-radius;
+  border: $input-border;
+  font-family: SemplicitaPro;
+  color: $motif-base;
+  caret-color: $grey-base;
+  outline: none;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.05);
 }

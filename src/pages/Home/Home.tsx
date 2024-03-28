@@ -6,13 +6,12 @@ import s from './Home.module.scss';
 import Button from '../Board/components/Button/Button';
 import api from '../../api/request';
 import { IBoard } from '../../common/interfaces/IBoard';
-import { Modal } from '../../common/components/Modal';
+import { CreateBoard } from '../../common/components/CreateBoardLogic/CreateBoard';
 
 export function Home(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [homeTitle, setTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);
-  const [value, setValue] = useState('');
   const [isModal, setModal] = useState(false);
   const onClose = (): void => setModal(!isModal);
   useEffect(() => {
@@ -28,39 +27,6 @@ export function Home(): JSX.Element {
 
     fetchData();
   }, []);
-
-  const isValidBoardName = (title: string): boolean => {
-    if (title === '') return false;
-    const pattern = /^[a-zA-Zа-яА-Я0-9\s.-_]+$/;
-    return pattern.test(title);
-  };
-
-  const generateRandomColor = (): string => {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    return `rgb(${r}, ${g}, ${b})`;
-  };
-
-  const createBoard = async (title: string, custom: object): Promise<void> => {
-    if (isValidBoardName(title)) {
-      try {
-        await api.post(`/board`, {
-          title,
-          custom,
-        });
-        setModal(false);
-        const data: { boards: IBoard[] } = await api.get(`/board`);
-        setBoards(data.boards);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching boards:', error);
-      }
-    } else {
-      // eslint-disable-next-line no-alert
-      alert('Incorect name board');
-    }
-  };
 
   return (
     <div>
@@ -80,18 +46,7 @@ export function Home(): JSX.Element {
           onClick={(): void => setModal(true)}
         />
       </div>
-      <Modal
-        visible={isModal}
-        title="Введіть назву нової дошки"
-        inputValue={value}
-        setValue={setValue}
-        footer={
-          <button onClick={(): Promise<void> => createBoard(value, { background: generateRandomColor() })}>
-            Створити
-          </button>
-        }
-        onClose={onClose}
-      />
+      <CreateBoard isModal={isModal} onClose={onClose} setBoards={setBoards} />
     </div>
   );
 }

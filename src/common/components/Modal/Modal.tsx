@@ -1,6 +1,6 @@
 import React from 'react';
 import s from './Modal.module.scss';
-import { ModalProps } from '../interfaces/IModalProps';
+import { ModalProps } from '../../interfaces/IModalProps';
 
 export function Modal({
   visible = false,
