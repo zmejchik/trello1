@@ -8,6 +8,10 @@
   min-width: 300px;
   border-radius: 20px;
 }
+.listH2{
+  display: flex;
+  align-items: center;
+}
 .list_title {
   width: 90%;
   text-shadow:
@@ -40,4 +44,60 @@
   margin-left: auto;
   margin-right: auto;
   float: left;
+}
+
+// Font
+
+$font-m: 40px;
+$font-s: 30px;
+
+// Motif colors
+
+$motif-base: #ff79e6;
+$motif-low: #ffa6f7;
+$motif-dark: #892276;
+$motif-shadow: #ffe1f7;
+
+// Common colors
+
+$grey-high: #bdbdbd;
+$grey-base: #dbdbdb;
+$grey-low: #efefef;
+
+// SVG
+
+$svg-max-width: 180px;
+
+// Input
+
+$input-height: 48px;
+$input-width: 80%;
+$input-radius: 30px;
+$input-border: 1px solid $grey-base;
+$input-shadow: 0 3px 3px rgba(0, 0, 0, 0.05);
+
+// Spacing (margins && paddings)
+
+$space-xl: 36px;
+$space-l: 18px;
+$space-m: 12px;
+$space-s: 6px;
+
+.list_inputForEditionNameList {
+  width: $input-width;
+  height: 100%;
+  padding-left: $space-xl * 1.2;
+  padding-right: $space-m;
+  font-size: $font-s;
+  border-radius: $input-radius;
+  border: $input-border;
+  font-family: SemplicitaPro;
+  color: $motif-base;
+  caret-color: $grey-base;
+  outline: none;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.05);
+}
+.listIcon{
+  color:#892276;
+  font-size: $font-m;
 }
