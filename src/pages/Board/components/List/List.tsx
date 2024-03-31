@@ -72,6 +72,12 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
               value={inputValueNameList}
               onChange={(event): void => setInputValueNameList(event.target.value)}
               onBlur={(): Promise<void> => editNameList(inputValueNameList)}
+              onKeyDown={(ev): void => {
+                if (ev.key === 'Enter') {
+                  const target = ev.target as HTMLInputElement;
+                  target.blur();
+                }
+              }}
             />
           </h2>
         ) : (
@@ -82,7 +88,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
 
         <div className={s.list_body}>
           {cards.map(({ id: cardId, title: titleCard }: ICard) => (
-            <Card key={cardId} id={cardId} title={titleCard} />
+            <Card key={cardId} id={cardId} title={titleCard} listId={id} />
           ))}
         </div>
         <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />

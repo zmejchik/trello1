@@ -84,6 +84,12 @@ export function Board(): JSX.Element {
               value={inputValueNameBoard}
               onChange={(event): void => setInputValueNameBoard(event.target.value)}
               onBlur={(): Promise<void> => editNameBoard(inputValueNameBoard)}
+              onKeyDown={(ev): void => {
+                if (ev.key === 'Enter') {
+                  const target = ev.target as HTMLInputElement;
+                  target.blur();
+                }
+              }}
             />
           </h1>
         ) : (
