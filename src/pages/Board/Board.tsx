@@ -10,6 +10,7 @@ import api from '../../api/request';
 import { IList } from '../../common/interfaces/IList';
 import { Modal } from '../../common/components/Modal/Modal';
 import { isValidBoardName } from '../../common/components/CreateBoardLogic/CreateBoard';
+import SelectColor from '../../common/components/SelectColor/SelectColor';
 
 export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,6 +21,7 @@ export function Board(): JSX.Element {
   const [isModal, setModal] = useState(false);
   const [inputValueNameBoard, setInputValueNameBoard] = useState('');
   const [isEditingName, setIsEditingName] = useState(false);
+  const [bgColor, setBgColor] = useState('FFFFFF');
 
   const { boardId } = useParams();
 
@@ -73,7 +75,7 @@ export function Board(): JSX.Element {
   };
 
   return (
-    <div>
+    <div className={s.board} style={{ backgroundColor: bgColor }}>
       <header className={s.board_header}>
         <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className={s.board_button_back} to="/" />
         {isEditingName ? (
@@ -97,6 +99,7 @@ export function Board(): JSX.Element {
             {boardTitle} With id {boardId}
           </h1>
         )}
+        <SelectColor onChange={setBgColor} />
       </header>
       <div className={s.board_body}>
         {lists.map(({ id, title: listTitle, cards }) => (
