@@ -4,3 +4,25 @@
   flex-direction: column;
   align-items: center;
 }
+
+.inputForColor {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px; /* Ширина и высота круга */
+  height: 30px;
+  border-radius: 50%; /* Создаем круглую форму */
+  cursor: pointer;
+  outline: none; /* Убираем обводку при фокусе */
+  border-color: black;
+  border: 3px solid;
+}
+
+/* Определение цвета круга */
+.inputForColor::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.inputForColor::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}

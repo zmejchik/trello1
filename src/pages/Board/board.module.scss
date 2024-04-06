@@ -1,3 +1,9 @@
+.board {
+  width: 95vw;
+  height: 95vh;
+  overflow-y: auto;
+  overflow-x: auto;
+}
 .board_header {
   display: flex;
   justify-content: space-around;

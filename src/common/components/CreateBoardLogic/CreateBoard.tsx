@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal } from '../Modal/Modal';
+import { Modal } from '../ModalWindow/Modal';
 import { IBoard } from '../../interfaces/IBoard';
 import api from '../../../api/request';
 

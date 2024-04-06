@@ -13,11 +13,27 @@ export function Home(): JSX.Element {
   const [homeTitle, setTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);
   const [isModal, setModal] = useState(false);
+  const [progres, setProgres] = useState(0);
   const onClose = (): void => setModal(!isModal);
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const data: { boards: IBoard[] } = await api.get(`/board`);
+        const data: { boards: IBoard[] } = await api.get(`/board`, {
+          onUploadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            if (total !== undefined) {
+              const calculatedProgress = Math.round((loaded / total) * 100);
+              setProgres(calculatedProgress);
+            }
+          },
+          onDownloadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            if (total !== undefined) {
+              const calculatedProgress = Math.round((loaded / total) * 100);
+              setProgres(calculatedProgress);
+            }
+          },
+        });
         setBoards(data.boards);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -30,6 +46,14 @@ export function Home(): JSX.Element {
 
   return (
     <div>
+      {progres >= 0 && (
+        <div className={s.progress_bar}>
+          <div className={s.progress} style={{ width: `${progres}%` }}>
+            {}
+          </div>
+        </div>
+      )}
+
       <header className={s.header}>
         <h1>{homeTitle}</h1>
       </header>

@@ -8,7 +8,7 @@ import List from './components/List/List';
 import s from './board.module.scss';
 import api from '../../api/request';
 import { IList } from '../../common/interfaces/IList';
-import { Modal } from '../../common/components/Modal/Modal';
+import { Modal } from '../../common/components/ModalWindow/Modal';
 import { isValidBoardName } from '../../common/components/CreateBoardLogic/CreateBoard';
 import SelectColor from '../../common/components/SelectColor/SelectColor';
 

@@ -13,7 +13,13 @@ function SelectColor({ onChange }: { onChange: (color: React.SetStateAction<stri
   return (
     <div className={s.body}>
       <label htmlFor="colorPicker">Виберіть колір для дошки:</label>
-      <input type="color" id="colorPicker" value={selectedColor} onChange={handleColorChange} />
+      <input
+        className={s.inputForColor}
+        type="color"
+        id="colorPicker"
+        value={selectedColor}
+        onChange={handleColorChange}
+      />
     </div>
   );
 }
