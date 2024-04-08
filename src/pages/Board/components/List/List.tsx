@@ -20,30 +20,41 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
   const [isEditingNameList, setIsEditingNameList] = useState(false);
   const [inputValueNameList, setInputValueNameList] = useState(listName);
 
-  const onClose = (): void => setModal(!isModal);
+  const onClose = (): void => setModal(false);
   const { boardId } = useParams();
 
   const createCard = async (titleCard: string): Promise<void> => {
-    try {
-      await api.post(`/board/${boardId}/card/`, {
-        title: titleCard,
-        list_id: id,
-        position: cards.length ? cards.length + 1 : 1,
-        description: 'washing process',
-        custom: {
-          deadline: '2022-08-31 12:00',
-        },
-      });
-      setModal(false);
-      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      const newCards = data.lists.find((list) => list.id === id)?.cards || [];
-      setcards(newCards);
-    } catch (error) {
+    if (isValidListName(titleCard)) {
+      try {
+        await api.post(`/board/${boardId}/card/`, {
+          title: titleCard,
+          list_id: id,
+          position: cards.length ? cards.length + 1 : 1,
+          description: 'washing process',
+          custom: {
+            deadline: '2022-08-31 12:00',
+          },
+        });
+        onClose();
+        const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
+        const newCards = data.lists.find((list) => list.id === id)?.cards || [];
+        setcards(newCards);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error creating card',
+          footer: error instanceof Error ? error.message : String(error),
+        }).then(() => {
+          onClose();
+        });
+      }
+    } else {
+      onClose();
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Error creating card',
-        footer: error instanceof Error ? error.message : String(error),
+        text: 'Error name card',
       });
     }
   };
@@ -60,15 +71,18 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Error editing card name',
+          text: 'Error editing list name',
           footer: error instanceof Error ? error.message : String(error),
+        }).then(() => {
+          onClose();
         });
       }
     } else {
+      onClose();
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Incorrect card name',
+        text: 'Incorrect list name',
       });
     }
   };

@@ -64,20 +64,28 @@ export function Board(): JSX.Element {
   }, []);
 
   const createList = async (title: string): Promise<void> => {
-    try {
-      await api.post(`/board/${boardId}/list`, {
-        title,
-        position: lists.length ? lists.length + 1 : 1,
-      });
-      setModal(false);
-      const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
-      setLists(data.lists);
-    } catch (error) {
+    if (isValidBoardName(title)) {
+      try {
+        await api.post(`/board/${boardId}/list`, {
+          title,
+          position: lists.length ? lists.length + 1 : 1,
+        });
+        setModal(false);
+        const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
+        setLists(data.lists);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error fetching boards',
+          footer: error instanceof Error ? error.message : String(error),
+        });
+      }
+    } else {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Error fetching boards',
-        footer: error instanceof Error ? error.message : String(error),
+        text: 'Incorrect list name',
       });
     }
   };

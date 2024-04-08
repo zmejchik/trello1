@@ -40,9 +40,9 @@ export function Card({ id: cardId, title: cardTitle, listId }: ICard): JSX.Eleme
     <div className={s.card} onClick={(): void => setIsEditingNameCard(true)}>
       {isEditingNameCard ? (
         <h2 className={s.listH2}>
-          <FaClipboard className={s.listIcon} />
+          <FaClipboard className={s.cardIcon} />
           <input
-            className={s.list_inputForEditionNameList}
+            className={s.card_inputForEditionNameCard}
             value={inputValueNameCard}
             onChange={(event): void => setInputValueNameCard(event.target.value)}
             onBlur={(): Promise<void> => editNameCard(inputValueNameCard)}
