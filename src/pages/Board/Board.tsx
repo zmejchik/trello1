@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { FaClipboard } from 'react-icons/fa';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
@@ -11,6 +12,7 @@ import { IList } from '../../common/interfaces/IList';
 import { Modal } from '../../common/components/ModalWindow/Modal';
 import { isValidBoardName } from '../../common/components/CreateBoardLogic/CreateBoard';
 import SelectColor from '../../common/components/SelectColor/SelectColor';
+import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
 
 export function Board(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,19 +24,39 @@ export function Board(): JSX.Element {
   const [inputValueNameBoard, setInputValueNameBoard] = useState('');
   const [isEditingName, setIsEditingName] = useState(false);
   const [bgColor, setBgColor] = useState('FFFFFF');
+  const [progresBar, setProgresBar] = useState(0);
 
   const { boardId } = useParams();
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const data: { title: string; lists: IList[] } = await api.get(`/board/${boardId}`);
+        const data: { title: string; lists: IList[] } = await api.get(`/board/${boardId}`, {
+          onUploadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            if (total !== undefined) {
+              const calculatedProgress = Math.round((loaded / total) * 100);
+              setProgresBar(calculatedProgress);
+            }
+          },
+          onDownloadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            if (total !== undefined) {
+              const calculatedProgress = Math.round((loaded / total) * 100);
+              setProgresBar(calculatedProgress);
+            }
+          },
+        });
         setLists(data.lists);
         setBoardTitle(data.title);
         setInputValueNameBoard(data.title);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching boards:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error fetching boards',
+          footer: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 
@@ -51,8 +73,12 @@ export function Board(): JSX.Element {
       const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
       setLists(data.lists);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching boards:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error fetching boards',
+        footer: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
@@ -65,17 +91,25 @@ export function Board(): JSX.Element {
         setBoardTitle(title);
         setIsEditingName(false);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error editing board name:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error editing board name',
+          footer: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
-      // eslint-disable-next-line no-alert
-      alert('Incorrect board name');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Incorrect board name',
+      });
     }
   };
 
   return (
     <div className={s.board} style={{ backgroundColor: bgColor }}>
+      {progresBar >= 0 && <ProgresBar progress={progresBar} />}
       <header className={s.board_header}>
         <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className={s.board_button_back} to="/" />
         {isEditingName ? (

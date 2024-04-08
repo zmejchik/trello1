@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import { Modal } from '../ModalWindow/Modal';
 import { IBoard } from '../../interfaces/IBoard';
 import api from '../../../api/request';
@@ -37,12 +38,21 @@ export function CreateBoard({
         const { boards }: { boards: IBoard[] } = await api.get('/board');
         setBoards(boards);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error creating board:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error creating board',
+        }).then(() => {
+          onClose();
+        });
       }
     } else {
-      // eslint-disable-next-line no-alert
-      alert('Incorrect board name');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Incorrect board name',
+      });
+      onClose(); // Закрываем модальное окно при некорректном имени доски
     }
   };
 

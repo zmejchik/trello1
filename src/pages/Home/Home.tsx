@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { BoardPreview } from './components/Board/BoardPrewiew';
@@ -7,13 +8,14 @@ import Button from '../Board/components/Button/Button';
 import api from '../../api/request';
 import { IBoard } from '../../common/interfaces/IBoard';
 import { CreateBoard } from '../../common/components/CreateBoardLogic/CreateBoard';
+import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
 
 export function Home(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [homeTitle, setTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);
   const [isModal, setModal] = useState(false);
-  const [progres, setProgres] = useState(0);
+  const [progresBar, setProgresBar] = useState(0);
   const onClose = (): void => setModal(!isModal);
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -23,21 +25,25 @@ export function Home(): JSX.Element {
             const { loaded, total } = progressEvent;
             if (total !== undefined) {
               const calculatedProgress = Math.round((loaded / total) * 100);
-              setProgres(calculatedProgress);
+              setProgresBar(calculatedProgress);
             }
           },
           onDownloadProgress: (progressEvent) => {
             const { loaded, total } = progressEvent;
             if (total !== undefined) {
               const calculatedProgress = Math.round((loaded / total) * 100);
-              setProgres(calculatedProgress);
+              setProgresBar(calculatedProgress);
             }
           },
         });
         setBoards(data.boards);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching boards:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error fetching boards',
+          footer: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 
@@ -46,14 +52,7 @@ export function Home(): JSX.Element {
 
   return (
     <div>
-      {progres >= 0 && (
-        <div className={s.progress_bar}>
-          <div className={s.progress} style={{ width: `${progres}%` }}>
-            {}
-          </div>
-        </div>
-      )}
-
+      {progresBar >= 0 && <ProgresBar progress={progresBar} />}
       <header className={s.header}>
         <h1>{homeTitle}</h1>
       </header>

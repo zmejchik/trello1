@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { FaClipboard } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
@@ -38,8 +39,12 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
       const newCards = data.lists.find((list) => list.id === id)?.cards || [];
       setcards(newCards);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching boards:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error creating card',
+        footer: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
@@ -52,12 +57,19 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
         setListName(newListName);
         setIsEditingNameList(false);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error editing board name:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error editing card name',
+          footer: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
-      // eslint-disable-next-line no-alert
-      alert('Incorrect list name');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Incorrect card name',
+      });
     }
   };
 

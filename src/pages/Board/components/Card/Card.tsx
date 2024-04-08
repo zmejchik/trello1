@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { FaClipboard } from 'react-icons/fa';
 import { ICard } from '../../../../common/interfaces/ICard';
@@ -19,12 +20,19 @@ export function Card({ id: cardId, title: cardTitle, listId }: ICard): JSX.Eleme
         setIsEditingNameCard(false);
         setCardName(title);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error editing board name:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error editing card name',
+          footer: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
-      // eslint-disable-next-line no-alert
-      alert('Incorrect card name');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Incorrect card name',
+      });
     }
   };
 
