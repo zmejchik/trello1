@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
-import { BoardPreview } from './components/Board/BoardPrewiew';
-import s from './Home.module.scss';
-import Button from '../Board/components/Button/Button';
+import Swal from 'sweetalert2';
 import api from '../../api/request';
-import { IBoard } from '../../common/interfaces/IBoard';
 import { CreateBoard } from '../../common/components/CreateBoardLogic/CreateBoard';
 import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
+import { IBoard } from '../../common/interfaces/IBoard';
+import Button from '../Board/components/Button/Button';
+import s from './Home.module.scss';
+import { BoardPreview } from './components/Board/BoardPrewiew';
 
 export function Home(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

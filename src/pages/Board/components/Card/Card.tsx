@@ -35,9 +35,14 @@ export function Card({ id: cardId, title: cardTitle, listId }: ICard): JSX.Eleme
       });
     }
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const dragStartHandler = (event: DragEvent): void => {
+    if (event.target instanceof HTMLElement) {
+      event.dataTransfer?.setData('text/plain', event.target.id);
+    }
+  };
   return (
-    <div className={s.card} onClick={(): void => setIsEditingNameCard(true)}>
+    <div id={cardId.toString()} className={s.card} draggable="true" onClick={(): void => setIsEditingNameCard(true)}>
       {isEditingNameCard ? (
         <h2 className={s.listH2}>
           <FaClipboard className={s.cardIcon} />

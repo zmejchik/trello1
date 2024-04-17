@@ -4,7 +4,6 @@ import { IButton } from '../../../../common/interfaces/IButton';
 import s from './button.module.scss';
 
 function Button({ icon, caption, className, to, onClick }: IButton): JSX.Element {
-  // Если есть ссылка, то используем компонент Link, иначе обычный button
   if (to) {
     return (
       <Link to={to}>

@@ -15,9 +15,7 @@ import SelectColor from '../../common/components/SelectColor/SelectColor';
 import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
 
 export function Board(): JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [boardTitle, setBoardTitle] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lists, setLists] = useState<IList[]>([]);
   const [value, setValue] = useState('');
   const [isModal, setModal] = useState(false);
@@ -137,9 +135,7 @@ export function Board(): JSX.Element {
             />
           </h1>
         ) : (
-          <h1 onClick={(): void => setIsEditingName(true)}>
-            {boardTitle} With id {boardId}
-          </h1>
+          <h1 onClick={(): void => setIsEditingName(true)}>{boardTitle}</h1>
         )}
         <SelectColor onChange={setBgColor} />
       </header>
