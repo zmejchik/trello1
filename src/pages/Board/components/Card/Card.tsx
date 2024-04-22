@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { FaClipboard } from 'react-icons/fa';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { ICard } from '../../../../common/interfaces/ICard';
 import s from './card.module.scss';
 import { isValidBoardName as isValidCardName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
 import api from '../../../../api/request';
 
-export function Card({ id: cardId, title: cardTitle, listId }: ICard): JSX.Element {
+export function Card({ id: cardId, title: cardTitle, listId, updateCardList }: ICard): JSX.Element {
   const [isEditingNameCard, setIsEditingNameCard] = useState(false);
   const [inputValueNameCard, setInputValueNameCard] = useState(cardTitle);
   const [cardName, setCardName] = useState(cardTitle);
@@ -36,32 +37,53 @@ export function Card({ id: cardId, title: cardTitle, listId }: ICard): JSX.Eleme
     }
   };
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const dragStartHandler = (event: DragEvent): void => {
-    if (event.target instanceof HTMLElement) {
-      event.dataTransfer?.setData('text/plain', event.target.id);
+  const dragStartHandler = (event: React.DragEvent<HTMLDivElement>): void => {
+    event.dataTransfer.setData('text/plain', cardId.toString());
+  };
+  const deleteCard = async (id: number): Promise<void> => {
+    try {
+      await api.delete(`/board/${boardId}/card/${id}`);
+      updateCardList();
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error delete card',
+        footer: error instanceof Error ? error.message : String(error),
+      });
     }
   };
+
   return (
-    <div id={cardId.toString()} className={s.card} draggable="true" onClick={(): void => setIsEditingNameCard(true)}>
-      {isEditingNameCard ? (
-        <h2 className={s.listH2}>
-          <FaClipboard className={s.cardIcon} />
-          <input
-            className={s.card_inputForEditionNameCard}
-            value={inputValueNameCard}
-            onChange={(event): void => setInputValueNameCard(event.target.value)}
-            onBlur={(): Promise<void> => editNameCard(inputValueNameCard)}
-            onKeyDown={(ev): void => {
-              if (ev.key === 'Enter') {
-                const target = ev.target as HTMLInputElement;
-                target.blur();
-              }
-            }}
-          />
-        </h2>
-      ) : (
-        <h3 className={s.card_title}>{cardName}</h3>
-      )}
+    <div className={s.wrapperCard}>
+      <div
+        id={cardId.toString()}
+        className={s.card}
+        draggable="true"
+        onDragStart={dragStartHandler}
+        onClick={(): void => setIsEditingNameCard(true)}
+      >
+        {isEditingNameCard ? (
+          <h2 className={s.listH2}>
+            <FaClipboard className={s.cardIcon} />
+            <input
+              className={s.card_inputForEditionNameCard}
+              value={inputValueNameCard}
+              onChange={(event): void => setInputValueNameCard(event.target.value)}
+              onBlur={(): Promise<void> => editNameCard(inputValueNameCard)}
+              onKeyDown={(ev): void => {
+                if (ev.key === 'Enter') {
+                  const target = ev.target as HTMLInputElement;
+                  target.blur();
+                }
+              }}
+            />
+          </h2>
+        ) : (
+          <h3 className={s.card_title}>{cardName}</h3>
+        )}
+      </div>
+      <RiDeleteBin6Line className={s.iconDelete} onClick={(): Promise<void> => deleteCard(cardId)} />
     </div>
   );
 }

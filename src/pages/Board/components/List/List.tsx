@@ -23,6 +23,21 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
   const onClose = (): void => setModal(false);
   const { boardId } = useParams();
 
+  const updateCardList = async (): Promise<void> => {
+    try {
+      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
+      const newCards = data.lists.find((list) => list.id === id)?.cards || [];
+      setcards(newCards);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error updating card list:',
+        footer: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   const createCard = async (titleCard: string): Promise<void> => {
     if (isValidListName(titleCard)) {
       try {
@@ -36,9 +51,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
           },
         });
         onClose();
-        const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-        const newCards = data.lists.find((list) => list.id === id)?.cards || [];
-        setcards(newCards);
+        updateCardList();
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -87,9 +100,32 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
     }
   };
 
+  function dragOverHandler(event: React.DragEvent<HTMLDivElement>): void {
+    event.preventDefault();
+  }
+
+  const dropHandler = async (event: React.DragEvent<HTMLDivElement>): Promise<void> => {
+    event.preventDefault();
+    const cardId = event.dataTransfer.getData('text/plain');
+    try {
+      await api.put(`/board/${boardId}/card/${cardId}`, { list_id: id }); // Update card with new list_id
+      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
+      const newCards = data.lists.find((list) => list.id === id)?.cards || [];
+      setcards(newCards);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error moving card',
+        footer: error instanceof Error ? error.message : String(error),
+      });
+    }
+    // eslint-disable-next-line no-console
+    console.log('2drop');
+  };
   return (
     <>
-      <div className={s.list}>
+      <div className={s.list} onDragOver={dragOverHandler} onDrop={dropHandler}>
         {isEditingNameList ? (
           <h2 className={s.listH2}>
             <FaClipboard className={s.listIcon} />
@@ -107,14 +143,19 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
             />
           </h2>
         ) : (
-          <h2 className={s.list_title} onClick={(): void => setIsEditingNameList(true)}>
+          <h2
+            className={s.list_title}
+            onDragOver={dragOverHandler}
+            onDrop={dropHandler}
+            onClick={(): void => setIsEditingNameList(true)}
+          >
             {listName}
           </h2>
         )}
 
         <div className={s.list_body}>
           {cards.map(({ id: cardId, title: titleCard }: ICard) => (
-            <Card key={cardId} id={cardId} title={titleCard} listId={id} />
+            <Card key={cardId} id={cardId} title={titleCard} listId={id} updateCardList={updateCardList} />
           ))}
         </div>
         <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />
