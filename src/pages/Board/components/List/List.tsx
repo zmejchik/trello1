@@ -7,6 +7,7 @@ import s from './list.module.scss';
 import Button from '../Button/Button';
 import api from '../../../../api/request';
 import { Card } from '../Card/Card';
+import Slot from '../../../../common/components/SlotForCard/SlotForCard';
 import { IList } from '../../../../common/interfaces/IList';
 import { Modal } from '../../../../common/components/ModalWindow/Modal';
 import { ICard } from '../../../../common/interfaces/ICard';
@@ -19,6 +20,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
   const [listName, setListName] = useState(titleList);
   const [isEditingNameList, setIsEditingNameList] = useState(false);
   const [inputValueNameList, setInputValueNameList] = useState(listName);
+  const [isDragginCard, setIsDragginCard] = useState(false);
 
   const onClose = (): void => setModal(false);
   const { boardId } = useParams();
@@ -102,16 +104,32 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
 
   function dragOverHandler(event: React.DragEvent<HTMLDivElement>): void {
     event.preventDefault();
+    setIsDragginCard(true);
   }
 
+  const addSlot = (): void => {
+    setcards([...cards, { id: -1, title: '' }]);
+  };
   const dropHandler = async (event: React.DragEvent<HTMLDivElement>): Promise<void> => {
     event.preventDefault();
     const cardId = event.dataTransfer.getData('text/plain');
     try {
-      await api.put(`/board/${boardId}/card/${cardId}`, { list_id: id }); // Update card with new list_id
       const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      const newCards = data.lists.find((list) => list.id === id)?.cards || [];
-      setcards(newCards);
+      let draggedCard = null;
+      data.lists.find((list) => {
+        draggedCard = list.cards.find((card) => card.id.toString() === cardId);
+        if (draggedCard) {
+          draggedCard.list_id = id;
+          return true;
+        }
+        return false;
+      });
+      if (draggedCard) {
+        await api.delete(`/board/${boardId}/card/${cardId}`);
+        await api.post(`/board/${boardId}/card/`, draggedCard);
+        setIsDragginCard(false);
+        updateCardList();
+      }
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -120,8 +138,6 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
         footer: error instanceof Error ? error.message : String(error),
       });
     }
-    // eslint-disable-next-line no-console
-    console.log('2drop');
   };
   return (
     <>
@@ -155,9 +171,10 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
 
         <div className={s.list_body}>
           {cards.map(({ id: cardId, title: titleCard }: ICard) => (
-            <Card key={cardId} id={cardId} title={titleCard} listId={id} updateCardList={updateCardList} />
+            <Card key={cardId} id={cardId} title={titleCard} list_id={id} updateCardList={updateCardList} />
           ))}
         </div>
+        {isDragginCard && <Slot onDragOver={addSlot} />}
         <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />
       </div>
       <Modal

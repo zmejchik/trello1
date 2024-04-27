@@ -8,7 +8,7 @@ import s from './card.module.scss';
 import { isValidBoardName as isValidCardName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
 import api from '../../../../api/request';
 
-export function Card({ id: cardId, title: cardTitle, listId, updateCardList }: ICard): JSX.Element {
+export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: ICard): JSX.Element {
   const [isEditingNameCard, setIsEditingNameCard] = useState(false);
   const [inputValueNameCard, setInputValueNameCard] = useState(cardTitle);
   const [cardName, setCardName] = useState(cardTitle);
@@ -17,7 +17,7 @@ export function Card({ id: cardId, title: cardTitle, listId, updateCardList }: I
   const editNameCard = async (title: string): Promise<void> => {
     if (isValidCardName(title)) {
       try {
-        await api.put(`/board/${boardId}/card/${cardId}`, { id: cardId, title, list_id: listId });
+        await api.put(`/board/${boardId}/card/${cardId}`, { id: cardId, title, list_id });
         setIsEditingNameCard(false);
         setCardName(title);
       } catch (error) {
@@ -36,14 +36,11 @@ export function Card({ id: cardId, title: cardTitle, listId, updateCardList }: I
       });
     }
   };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const dragStartHandler = (event: React.DragEvent<HTMLDivElement>): void => {
-    event.dataTransfer.setData('text/plain', cardId.toString());
-  };
+
   const deleteCard = async (id: number): Promise<void> => {
     try {
       await api.delete(`/board/${boardId}/card/${id}`);
-      updateCardList();
+      if (updateCardList !== undefined) updateCardList();
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -54,6 +51,10 @@ export function Card({ id: cardId, title: cardTitle, listId, updateCardList }: I
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const dragStartHandler = (event: React.DragEvent<HTMLDivElement>): void => {
+    event.dataTransfer.setData('text/plain', cardId.toString());
+  };
   return (
     <div className={s.wrapperCard}>
       <div
