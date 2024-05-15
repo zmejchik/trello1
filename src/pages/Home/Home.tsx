@@ -11,8 +11,7 @@ import s from './Home.module.scss';
 import { BoardPreview } from './components/Board/BoardPrewiew';
 
 export function Home(): JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [homeTitle, setTitle] = useState('Мої дошки');
+  const [homeTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);
   const [isModal, setModal] = useState(false);
   const [progresBar, setProgresBar] = useState(0);
@@ -40,8 +39,8 @@ export function Home(): JSX.Element {
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error fetching boards',
+          title: 'Ой...',
+          text: 'Помилка завантаження дошок',
           footer: error instanceof Error ? error.message : String(error),
         });
       }

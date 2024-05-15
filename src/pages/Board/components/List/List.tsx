@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { FaClipboard } from 'react-icons/fa';
@@ -14,7 +14,7 @@ import { ICard } from '../../../../common/interfaces/ICard';
 import { isValidBoardName as isValidListName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
 
 function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
-  const [value, setValue] = useState('');
+  const [newCardName, setNewCardName] = useState('');
   const [isModal, setModal] = useState(false);
   const [cards, setcards] = useState(cardsArray);
   const [listName, setListName] = useState(titleList);
@@ -23,7 +23,18 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
   const [isDragginCard, setIsDragginCard] = useState(false);
 
   const onClose = (): void => setModal(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { boardId } = useParams();
+
+  /**
+   * Adds a document event listener to handle clicks outside of a specific element.
+   * If a click occurs outside of the specified element, it sets the state to stop editing the name.
+   */
+  useEffect(() => {
+    if (isEditingNameList) {
+      inputRef.current?.focus();
+    }
+  });
 
   const updateCardList = async (): Promise<void> => {
     try {
@@ -33,8 +44,8 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Error updating card list:',
+        title: 'Ой...',
+        text: 'Помилка оновлення списків:',
         footer: error instanceof Error ? error.message : String(error),
       });
     }
@@ -54,11 +65,12 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
         });
         onClose();
         updateCardList();
+        setNewCardName('');
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error creating card',
+          title: 'Ой...',
+          text: 'Помилка створення картки',
           footer: error instanceof Error ? error.message : String(error),
         }).then(() => {
           onClose();
@@ -68,8 +80,8 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
       onClose();
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Error name card',
+        title: 'Ой...',
+        text: 'Невалідне ім`я картки',
       });
     }
   };
@@ -85,8 +97,8 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error editing list name',
+          title: 'Ой...',
+          text: 'Помилка редагування імені списку',
           footer: error instanceof Error ? error.message : String(error),
         }).then(() => {
           onClose();
@@ -96,8 +108,8 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
       onClose();
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Incorrect list name',
+        title: 'Ой...',
+        text: 'Некоректне ім`я списку',
       });
     }
   };
@@ -156,6 +168,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
                   target.blur();
                 }
               }}
+              ref={inputRef}
             />
           </h2>
         ) : (
@@ -179,10 +192,11 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
       </div>
       <Modal
         visible={isModal}
-        title="Введіть назву нового списку"
-        inputValue={value}
-        setValue={setValue}
-        footer={<button onClick={(): Promise<void> => createCard(value)}>Створити</button>}
+        title="Введіть назву нової картки"
+        placeholder="Назва нової картки"
+        inputValue={newCardName}
+        setValue={setNewCardName}
+        footer={<button onClick={(): Promise<void> => createCard(newCardName)}>Створити</button>}
         onClose={onClose}
       />
     </>

@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
-import { FaSquarePlus } from 'react-icons/fa6';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaClipboard } from 'react-icons/fa';
+import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import api from '../../api/request';
+import { isValidBoardName } from '../../common/components/CreateBoardLogic/CreateBoard';
+import { Modal } from '../../common/components/ModalWindow/Modal';
+import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
+import SelectColor from '../../common/components/SelectColor/SelectColor';
+import { IList } from '../../common/interfaces/IList';
+import s from './board.module.scss';
 import Button from './components/Button/Button';
 import List from './components/List/List';
-import s from './board.module.scss';
-import api from '../../api/request';
-import { IList } from '../../common/interfaces/IList';
-import { Modal } from '../../common/components/ModalWindow/Modal';
-import { isValidBoardName } from '../../common/components/CreateBoardLogic/CreateBoard';
-import SelectColor from '../../common/components/SelectColor/SelectColor';
-import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
 
 export function Board(): JSX.Element {
   const [boardTitle, setBoardTitle] = useState('');
   const [lists, setLists] = useState<IList[]>([]);
-  const [value, setValue] = useState('');
+  const [newListName, setNewListName] = useState('');
   const [isModal, setModal] = useState(false);
   const [inputValueNameBoard, setInputValueNameBoard] = useState('');
   const [isEditingName, setIsEditingName] = useState(false);
@@ -25,6 +25,8 @@ export function Board(): JSX.Element {
   const [progresBar, setProgresBar] = useState(0);
 
   const { boardId } = useParams();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const onClose = (): void => setModal(!isModal);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -51,8 +53,8 @@ export function Board(): JSX.Element {
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error fetching boards',
+          title: 'Ой...',
+          text: 'Помилка завантаження дошки',
           footer: error instanceof Error ? error.message : String(error),
         });
       }
@@ -61,54 +63,60 @@ export function Board(): JSX.Element {
     fetchData();
   }, []);
 
-  const createList = async (title: string): Promise<void> => {
-    if (isValidBoardName(title)) {
+  /**
+   * Adds a document event listener to handle clicks outside of a specific element.
+   * If a click occurs outside of the specified element, it sets the state to stop editing the name.
+   */
+  useEffect(() => {
+    if (isEditingName) {
+      inputRef.current?.focus();
+    }
+  });
+
+  const createList = async (titleList: string): Promise<void> => {
+    if (isValidBoardName(titleList)) {
       try {
         await api.post(`/board/${boardId}/list`, {
-          title,
+          title: titleList,
           position: lists.length ? lists.length + 1 : 1,
         });
-        setModal(false);
+        onClose();
         const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
         setLists(data.lists);
+        setNewListName('');
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error fetching boards',
+          title: 'Ой...',
+          text: 'Помилка завантаження або створення списків',
           footer: error instanceof Error ? error.message : String(error),
         });
       }
     } else {
+      onClose();
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Incorrect list name',
+        title: 'Ой...',
+        text: 'Невалідне ім`я списку',
       });
     }
   };
 
-  const onClose = (): void => setModal(!isModal);
-
   const editNameBoard = async (title: string): Promise<void> => {
-    if (isValidBoardName(title)) {
-      try {
-        await api.put(`/board/${boardId}`, { title });
-        setBoardTitle(title);
-        setIsEditingName(false);
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Error editing board name',
-          footer: error instanceof Error ? error.message : String(error),
-        });
-      }
-    } else {
+    if (!isValidBoardName(title)) {
+      Swal.fire({ icon: 'error', title: 'Ой...', text: 'Некоректне ім`я дошки' });
+      return;
+    }
+    try {
+      await api.put(`/board/${boardId}`, { title });
+      setBoardTitle(title);
+      setIsEditingName(false);
+    } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Incorrect board name',
+        title: 'Ой...',
+        text: 'Помилка редагування імені дошки',
+        footer: error instanceof Error ? error.message : String(error),
       });
     }
   };
@@ -128,10 +136,10 @@ export function Board(): JSX.Element {
               onBlur={(): Promise<void> => editNameBoard(inputValueNameBoard)}
               onKeyDown={(ev): void => {
                 if (ev.key === 'Enter') {
-                  const target = ev.target as HTMLInputElement;
-                  target.blur();
+                  editNameBoard(inputValueNameBoard);
                 }
               }}
+              ref={inputRef}
             />
           </h1>
         ) : (
@@ -153,9 +161,10 @@ export function Board(): JSX.Element {
       <Modal
         visible={isModal}
         title="Введіть назву нового списку"
-        inputValue={value}
-        setValue={setValue}
-        footer={<button onClick={(): Promise<void> => createList(value)}>Створити</button>}
+        inputValue={newListName}
+        placeholder="Назва нового списку"
+        setValue={setNewListName}
+        footer={<button onClick={(): Promise<void> => createList(newListName)}>Створити</button>}
         onClose={onClose}
       />
     </div>

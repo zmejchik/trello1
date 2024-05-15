@@ -1,12 +1,11 @@
 .board {
   width: 100vw;
   height: 100vh;
-  overflow-y: auto;
-  overflow-x: auto;
 }
 .board_header {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
   align-items: flex-start;
   text-shadow:
     -1px -1px #fff,

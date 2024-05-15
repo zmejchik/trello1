@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { FaClipboard } from 'react-icons/fa';
@@ -13,6 +13,17 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
   const [inputValueNameCard, setInputValueNameCard] = useState(cardTitle);
   const [cardName, setCardName] = useState(cardTitle);
   const { boardId } = useParams();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * Executes the focus action on the input element when the isEditingNameCard state is true.
+   * This effect is triggered when the component mounts or when the isEditingNameCard state changes.
+   */
+  useEffect(() => {
+    if (isEditingNameCard) {
+      inputRef.current?.focus();
+    }
+  });
 
   const editNameCard = async (title: string): Promise<void> => {
     if (isValidCardName(title)) {
@@ -23,16 +34,16 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error editing card name',
+          title: 'Ой...',
+          text: 'Помилка редагування імені картки',
           footer: error instanceof Error ? error.message : String(error),
         });
       }
     } else {
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Incorrect card name',
+        title: 'Ой...',
+        text: 'Некоректне ім`я картки',
       });
     }
   };
@@ -44,14 +55,13 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Error delete card',
+        title: 'Ой...',
+        text: 'Помилка видалення картки',
         footer: error instanceof Error ? error.message : String(error),
       });
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dragStartHandler = (event: React.DragEvent<HTMLDivElement>): void => {
     event.dataTransfer.setData('text/plain', cardId.toString());
   };
@@ -78,6 +88,7 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
                   target.blur();
                 }
               }}
+              ref={inputRef}
             />
           </h2>
         ) : (
