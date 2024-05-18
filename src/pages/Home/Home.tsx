@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { LinearProgress } from '@mui/material';
+import { red } from '@mui/material/colors';
 import api from '../../api/request';
 import { CreateBoard } from '../../common/components/CreateBoardLogic/CreateBoard';
-import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
 import { IBoard } from '../../common/interfaces/IBoard';
 import Button from '../Board/components/Button/Button';
 import s from './Home.module.scss';
@@ -51,7 +52,14 @@ export function Home(): JSX.Element {
 
   return (
     <div>
-      {progresBar >= 0 && <ProgresBar progress={progresBar} />}
+      <LinearProgress
+        variant="determinate"
+        value={progresBar}
+        sx={{
+          height: 20,
+          color: red,
+        }}
+      />
       <header className={s.header}>
         <h1>{homeTitle}</h1>
       </header>

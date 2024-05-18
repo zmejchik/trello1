@@ -1,6 +1,7 @@
 .board {
   width: 100vw;
-  height: 100vh;
+  height: 100vh;  
+  
 }
 .board_header {
   display: flex;
@@ -35,6 +36,8 @@
   display: flex;
   justify-content: space-evenly;
   overflow-x: auto;
+  padding-left: 10px;
+  padding-right: 10px;  
 }
 .board_button {
   width: fit-content;

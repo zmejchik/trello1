@@ -26,24 +26,24 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
   });
 
   const editNameCard = async (title: string): Promise<void> => {
-    if (isValidCardName(title)) {
-      try {
-        await api.put(`/board/${boardId}/card/${cardId}`, { id: cardId, title, list_id });
-        setIsEditingNameCard(false);
-        setCardName(title);
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Ой...',
-          text: 'Помилка редагування імені картки',
-          footer: error instanceof Error ? error.message : String(error),
-        });
-      }
-    } else {
+    if (!isValidCardName(title)) {
       Swal.fire({
         icon: 'error',
         title: 'Ой...',
         text: 'Некоректне ім`я картки',
+      });
+      return;
+    }
+    try {
+      await api.put(`/board/${boardId}/card/${cardId}`, { id: cardId, title, list_id });
+      setIsEditingNameCard(false);
+      setCardName(title);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ой...',
+        text: 'Помилка редагування імені картки',
+        footer: error instanceof Error ? error.message : String(error),
       });
     }
   };
@@ -84,8 +84,7 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
               onBlur={(): Promise<void> => editNameCard(inputValueNameCard)}
               onKeyDown={(ev): void => {
                 if (ev.key === 'Enter') {
-                  const target = ev.target as HTMLInputElement;
-                  target.blur();
+                  editNameCard(inputValueNameCard);
                 }
               }}
               ref={inputRef}

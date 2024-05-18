@@ -4,10 +4,11 @@ import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { LinearProgress } from '@mui/material';
+import { red } from '@mui/material/colors';
 import api from '../../api/request';
 import { isValidBoardName } from '../../common/components/CreateBoardLogic/CreateBoard';
 import { Modal } from '../../common/components/ModalWindow/Modal';
-import { ProgresBar } from '../../common/components/ProgressBar/ProgresBar';
 import SelectColor from '../../common/components/SelectColor/SelectColor';
 import { IList } from '../../common/interfaces/IList';
 import s from './board.module.scss';
@@ -74,30 +75,27 @@ export function Board(): JSX.Element {
   });
 
   const createList = async (titleList: string): Promise<void> => {
-    if (isValidBoardName(titleList)) {
-      try {
-        await api.post(`/board/${boardId}/list`, {
-          title: titleList,
-          position: lists.length ? lists.length + 1 : 1,
-        });
-        onClose();
-        const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
-        setLists(data.lists);
-        setNewListName('');
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Ой...',
-          text: 'Помилка завантаження або створення списків',
-          footer: error instanceof Error ? error.message : String(error),
-        });
-      }
-    } else {
+    if (!isValidBoardName(titleList)) {
       onClose();
+      Swal.fire({ icon: 'error', title: 'Ой...', text: 'Некоректне ім`я списку' });
+      return;
+    }
+
+    try {
+      await api.post(`/board/${boardId}/list`, {
+        title: titleList,
+        position: lists.length ? lists.length + 1 : 1,
+      });
+      onClose();
+      const data: { lists: IList[] } = await api.get(`/board/${boardId}/`);
+      setLists(data.lists);
+      setNewListName('');
+    } catch (error) {
       Swal.fire({
         icon: 'error',
         title: 'Ой...',
-        text: 'Невалідне ім`я списку',
+        text: 'Помилка завантаження або створення списків',
+        footer: error instanceof Error ? error.message : String(error),
       });
     }
   };
@@ -123,7 +121,14 @@ export function Board(): JSX.Element {
 
   return (
     <div className={s.board} style={{ backgroundColor: bgColor }}>
-      {progresBar >= 0 && <ProgresBar progress={progresBar} />}
+      <LinearProgress
+        variant="determinate"
+        value={progresBar}
+        sx={{
+          height: 20,
+          color: red,
+        }}
+      />
       <header className={s.board_header}>
         <Button icon={<MdKeyboardDoubleArrowLeft />} caption="Додому" className={s.board_button_back} to="/" />
         {isEditingName ? (

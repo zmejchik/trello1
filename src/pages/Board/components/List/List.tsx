@@ -52,64 +52,64 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
   };
 
   const createCard = async (titleCard: string): Promise<void> => {
-    if (isValidListName(titleCard)) {
-      try {
-        await api.post(`/board/${boardId}/card/`, {
-          title: titleCard,
-          list_id: id,
-          position: cards.length ? cards.length + 1 : 1,
-          description: 'washing process',
-          custom: {
-            deadline: '2022-08-31 12:00',
-          },
-        });
-        onClose();
-        updateCardList();
-        setNewCardName('');
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Ой...',
-          text: 'Помилка створення картки',
-          footer: error instanceof Error ? error.message : String(error),
-        }).then(() => {
-          onClose();
-        });
-      }
-    } else {
+    if (!isValidListName(titleCard)) {
       onClose();
       Swal.fire({
         icon: 'error',
         title: 'Ой...',
         text: 'Невалідне ім`я картки',
       });
+      return;
+    }
+    try {
+      await api.post(`/board/${boardId}/card/`, {
+        title: titleCard,
+        list_id: id,
+        position: cards.length ? cards.length + 1 : 1,
+        description: 'washing process',
+        custom: {
+          deadline: '2022-08-31 12:00',
+        },
+      });
+      onClose();
+      updateCardList();
+      setNewCardName('');
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ой...',
+        text: 'Помилка створення картки',
+        footer: error instanceof Error ? error.message : String(error),
+      }).then(() => {
+        onClose();
+      });
     }
   };
 
   const editNameList = async (title: string): Promise<void> => {
-    if (isValidListName(title)) {
-      try {
-        await api.put(`/board/${boardId}/list/${id}`, { title });
-        const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-        const newListName = data.lists.find((list) => list.id === id)?.title || '';
-        setListName(newListName);
-        setIsEditingNameList(false);
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Ой...',
-          text: 'Помилка редагування імені списку',
-          footer: error instanceof Error ? error.message : String(error),
-        }).then(() => {
-          onClose();
-        });
-      }
-    } else {
+    if (!isValidListName(title)) {
       onClose();
       Swal.fire({
         icon: 'error',
         title: 'Ой...',
         text: 'Некоректне ім`я списку',
+      });
+      return;
+    }
+    try {
+      await api.put(`/board/${boardId}/list/${id}`, { title });
+      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
+      const newListName = data.lists.find((list) => list.id === id)?.title || '';
+      setListName(newListName);
+      setIsEditingNameList(false);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ой...',
+        text: 'Помилка редагування імені списку',
+        footer: error instanceof Error ? error.message : String(error),
+      }).then(() => {
+        onClose();
       });
     }
   };
@@ -164,8 +164,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
               onBlur={(): Promise<void> => editNameList(inputValueNameList)}
               onKeyDown={(ev): void => {
                 if (ev.key === 'Enter') {
-                  const target = ev.target as HTMLInputElement;
-                  target.blur();
+                  editNameList(inputValueNameList);
                 }
               }}
               ref={inputRef}
