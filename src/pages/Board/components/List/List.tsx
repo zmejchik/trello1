@@ -4,156 +4,92 @@ import { FaSquarePlus } from 'react-icons/fa6';
 import { FaClipboard } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import s from './list.module.scss';
-import Button from '../Button/Button';
-import api from '../../../../api/request';
+import Button from '../../../../common/components/Button/Button';
 import { Card } from '../Card/Card';
 import Slot from '../../../../common/components/SlotForCard/SlotForCard';
 import { IList } from '../../../../common/interfaces/IList';
 import { Modal } from '../../../../common/components/ModalWindow/Modal';
 import { ICard } from '../../../../common/interfaces/ICard';
-import { isValidBoardName as isValidListName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
+import { updateCardList } from '../../../../utils/updateCardList';
+import { createCard } from '../../../../utils/createCard';
+import { editNameList } from '../../../../utils/editNameList';
+import api from '../../../../api/request';
 
 function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
   const [newCardName, setNewCardName] = useState('');
   const [isModal, setModal] = useState(false);
-  const [cards, setcards] = useState(cardsArray);
+  const [cards, setCards] = useState(cardsArray);
   const [listName, setListName] = useState(titleList);
   const [isEditingNameList, setIsEditingNameList] = useState(false);
   const [inputValueNameList, setInputValueNameList] = useState(listName);
-  const [isDragginCard, setIsDragginCard] = useState(false);
+  const [isDraggingCard, setIsDraggingCard] = useState(false);
+  const [draggingCardId, setDraggingCardId] = useState<number>(-1);
 
   const onClose = (): void => setModal(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { boardId } = useParams();
+  const { boardId } = useParams<{ boardId?: string }>();
 
-  /**
-   * Adds a document event listener to handle clicks outside of a specific element.
-   * If a click occurs outside of the specified element, it sets the state to stop editing the name.
-   */
   useEffect(() => {
     if (isEditingNameList) {
       inputRef.current?.focus();
     }
-  });
-
-  const updateCardList = async (): Promise<void> => {
-    try {
-      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      const newCards = data.lists.find((list) => list.id === id)?.cards || [];
-      setcards(newCards);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Помилка оновлення списків:',
-        footer: error instanceof Error ? error.message : String(error),
-      });
-    }
-  };
-
-  const createCard = async (titleCard: string): Promise<void> => {
-    if (!isValidListName(titleCard)) {
-      onClose();
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Невалідне ім`я картки',
-      });
-      return;
-    }
-    try {
-      await api.post(`/board/${boardId}/card/`, {
-        title: titleCard,
-        list_id: id,
-        position: cards.length ? cards.length + 1 : 1,
-        description: 'washing process',
-        custom: {
-          deadline: '2022-08-31 12:00',
-        },
-      });
-      onClose();
-      updateCardList();
-      setNewCardName('');
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Помилка створення картки',
-        footer: error instanceof Error ? error.message : String(error),
-      }).then(() => {
-        onClose();
-      });
-    }
-  };
-
-  const editNameList = async (title: string): Promise<void> => {
-    if (!isValidListName(title)) {
-      onClose();
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Некоректне ім`я списку',
-      });
-      return;
-    }
-    try {
-      await api.put(`/board/${boardId}/list/${id}`, { title });
-      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      const newListName = data.lists.find((list) => list.id === id)?.title || '';
-      setListName(newListName);
-      setIsEditingNameList(false);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Помилка редагування імені списку',
-        footer: error instanceof Error ? error.message : String(error),
-      }).then(() => {
-        onClose();
-      });
-    }
-  };
+  }, [isEditingNameList]);
 
   function dragOverHandler(event: React.DragEvent<HTMLDivElement>): void {
     event.preventDefault();
-    setIsDragginCard(true);
+    setIsDraggingCard(true);
   }
 
-  const addSlot = (): void => {
-    setcards([...cards, { id: -1, title: '' }]);
+  function dragLeaveHandler(): void {
+    setIsDraggingCard(false);
+  }
+
+  const addSlot = (cardId: number): void => {
+    if (!cards.some((card) => card.id === cardId)) {
+      setCards([...cards, { id: -1, title: '' }]);
+    }
   };
+
+  const delSlot = (): void => {
+    setCards(cards.filter((card) => card.id !== -1));
+  };
+
   const dropHandler = async (event: React.DragEvent<HTMLDivElement>): Promise<void> => {
     event.preventDefault();
     const cardId = event.dataTransfer.getData('text/plain');
-    try {
-      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      let draggedCard = null;
-      data.lists.find((list) => {
-        draggedCard = list.cards.find((card) => card.id.toString() === cardId);
+    if (boardId && draggingCardId) {
+      try {
+        const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
+        let draggedCard: ICard | undefined;
+        data.lists.find((list) => {
+          draggedCard = list.cards.find((card) => card.id.toString() === cardId);
+          if (draggedCard) {
+            draggedCard.list_id = id;
+            return true;
+          }
+          return false;
+        });
         if (draggedCard) {
-          draggedCard.list_id = id;
-          return true;
+          await api.delete(`/board/${boardId}/card/${cardId}`);
+          await api.post(`/board/${boardId}/card/`, draggedCard);
+          setIsDraggingCard(false);
+          delSlot();
+          await updateCardList(boardId, id, setCards);
         }
-        return false;
-      });
-      if (draggedCard) {
-        await api.delete(`/board/${boardId}/card/${cardId}`);
-        await api.post(`/board/${boardId}/card/`, draggedCard);
-        setIsDragginCard(false);
-        updateCardList();
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error moving card',
+          footer: error instanceof Error ? error.message : String(error),
+        });
       }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Error moving card',
-        footer: error instanceof Error ? error.message : String(error),
-      });
     }
   };
+
   return (
     <>
-      <div className={s.list} onDragOver={dragOverHandler} onDrop={dropHandler}>
+      <div className={s.list} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler} onDrop={dropHandler}>
         {isEditingNameList ? (
           <h2 className={s.listH2}>
             <FaClipboard className={s.listIcon} />
@@ -161,10 +97,14 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
               className={s.list_inputForEditionNameList}
               value={inputValueNameList}
               onChange={(event): void => setInputValueNameList(event.target.value)}
-              onBlur={(): Promise<void> => editNameList(inputValueNameList)}
+              onBlur={(): Promise<void> =>
+                boardId
+                  ? editNameList(boardId, id, inputValueNameList, setListName, setIsEditingNameList)
+                  : Promise.resolve()
+              }
               onKeyDown={(ev): void => {
-                if (ev.key === 'Enter') {
-                  editNameList(inputValueNameList);
+                if (ev.key === 'Enter' && boardId) {
+                  editNameList(boardId, id, inputValueNameList, setListName, setIsEditingNameList);
                 }
               }}
               ref={inputRef}
@@ -182,20 +122,43 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
         )}
 
         <div className={s.list_body}>
-          {cards.map(({ id: cardId, title: titleCard }: ICard) => (
-            <Card key={cardId} id={cardId} title={titleCard} list_id={id} updateCardList={updateCardList} />
-          ))}
+          {cards.map(({ id: cardId, title: titleCard }: ICard) =>
+            isDraggingCard && draggingCardId === +id ? (
+              <Slot key={cardId} cardId={id} onDragOver={addSlot} onDragLeave={delSlot} />
+            ) : (
+              <Card
+                key={cardId}
+                id={cardId}
+                title={titleCard}
+                list_id={id}
+                updateCardList={(): Promise<void> =>
+                  boardId ? updateCardList(boardId, id, setCards) : Promise.resolve()
+                }
+                setDraggingCardId={setDraggingCardId}
+              />
+            )
+          )}
         </div>
-        {isDragginCard && <Slot onDragOver={addSlot} />}
         <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />
       </div>
+
       <Modal
         visible={isModal}
         title="Введіть назву нової картки"
         placeholder="Назва нової картки"
         inputValue={newCardName}
         setValue={setNewCardName}
-        footer={<button onClick={(): Promise<void> => createCard(newCardName)}>Створити</button>}
+        footer={
+          <button
+            onClick={(): Promise<void> =>
+              boardId
+                ? createCard(boardId, id, newCardName, cards, setCards, setNewCardName, onClose)
+                : Promise.resolve()
+            }
+          >
+            Створити
+          </button>
+        }
         onClose={onClose}
       />
     </>

@@ -1,77 +1,43 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { FaClipboard } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { ICard } from '../../../../common/interfaces/ICard';
 import s from './card.module.scss';
-import { isValidBoardName as isValidCardName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
-import api from '../../../../api/request';
+import { editNameCard } from '../../../../utils/editNameCard';
+import { deleteCard } from '../../../../utils/deleteCard';
+import { dragStartHandler } from '../../../../utils/dragStartHandler';
 
-export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: ICard): JSX.Element {
+interface CardProps extends ICard {
+  setDraggingCardId: (id: number) => void;
+}
+
+export function Card({
+  id: cardId,
+  title: cardTitle,
+  list_id,
+  updateCardList,
+  setDraggingCardId,
+}: CardProps): JSX.Element {
   const [isEditingNameCard, setIsEditingNameCard] = useState(false);
   const [inputValueNameCard, setInputValueNameCard] = useState(cardTitle);
   const [cardName, setCardName] = useState(cardTitle);
-  const { boardId } = useParams();
+  const { boardId } = useParams<{ boardId: string }>();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  /**
-   * Executes the focus action on the input element when the isEditingNameCard state is true.
-   * This effect is triggered when the component mounts or when the isEditingNameCard state changes.
-   */
   useEffect(() => {
     if (isEditingNameCard) {
       inputRef.current?.focus();
     }
-  });
+  }, [isEditingNameCard]);
 
-  const editNameCard = async (title: string): Promise<void> => {
-    if (!isValidCardName(title)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Некоректне ім`я картки',
-      });
-      return;
-    }
-    try {
-      await api.put(`/board/${boardId}/card/${cardId}`, { id: cardId, title, list_id });
-      setIsEditingNameCard(false);
-      setCardName(title);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Помилка редагування імені картки',
-        footer: error instanceof Error ? error.message : String(error),
-      });
-    }
-  };
-
-  const deleteCard = async (id: number): Promise<void> => {
-    try {
-      await api.delete(`/board/${boardId}/card/${id}`);
-      if (updateCardList !== undefined) updateCardList();
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ой...',
-        text: 'Помилка видалення картки',
-        footer: error instanceof Error ? error.message : String(error),
-      });
-    }
-  };
-
-  const dragStartHandler = (event: React.DragEvent<HTMLDivElement>): void => {
-    event.dataTransfer.setData('text/plain', cardId.toString());
-  };
   return (
     <div className={s.wrapperCard}>
       <div
         id={cardId.toString()}
         className={s.card}
         draggable="true"
-        onDragStart={dragStartHandler}
+        onDragStart={(event): void => dragStartHandler(event, cardId, setDraggingCardId)}
         onClick={(): void => setIsEditingNameCard(true)}
       >
         {isEditingNameCard ? (
@@ -81,10 +47,16 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
               className={s.card_inputForEditionNameCard}
               value={inputValueNameCard}
               onChange={(event): void => setInputValueNameCard(event.target.value)}
-              onBlur={(): Promise<void> => editNameCard(inputValueNameCard)}
+              onBlur={(): void => {
+                if (boardId && list_id) {
+                  editNameCard(inputValueNameCard, cardId, boardId, list_id, setIsEditingNameCard, setCardName);
+                }
+              }}
               onKeyDown={(ev): void => {
                 if (ev.key === 'Enter') {
-                  editNameCard(inputValueNameCard);
+                  if (boardId && list_id) {
+                    editNameCard(inputValueNameCard, cardId, boardId, list_id, setIsEditingNameCard, setCardName);
+                  }
                 }
               }}
               ref={inputRef}
@@ -94,7 +66,10 @@ export function Card({ id: cardId, title: cardTitle, list_id, updateCardList }: 
           <h3 className={s.card_title}>{cardName}</h3>
         )}
       </div>
-      <RiDeleteBin6Line className={s.iconDelete} onClick={(): Promise<void> => deleteCard(cardId)} />
+      <RiDeleteBin6Line
+        className={s.iconDelete}
+        onClick={(): Promise<void> => (boardId ? deleteCard(cardId, boardId, updateCardList) : Promise.resolve())}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { IButton } from '../../../../common/interfaces/IButton';
+import { IButton } from '../../interfaces/IButton';
 import s from './button.module.scss';
 
 function Button({ icon, caption, className, to, onClick }: IButton): JSX.Element {
