@@ -12,7 +12,11 @@ function SelectColor({ onChange }: { onChange: (color: React.SetStateAction<stri
 
   return (
     <div className={s.body}>
-      <label htmlFor="colorPicker">Виберіть колір для дошки:</label>
+      <label htmlFor="colorPicker">
+        Виберіть
+        <br />
+        колір для дошки:
+      </label>
       <input
         className={s.inputForColor}
         type="color"
