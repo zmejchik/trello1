@@ -1,0 +1,24 @@
+.custom_button {
+  width: 80%;
+  max-width: 300px;
+  display: flex;
+  color: #fff;
+  background-color: #673ab7;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  border-radius: 10px;
+  border-style: double;
+  font-size: x-large;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px;
+  margin-top: 20px;
+  transition: width 0.3s, background-color 0.3s;
+}
+
+.custom_button:hover {
+  background-color: #1b05aa;
+}
