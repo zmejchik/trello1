@@ -23,8 +23,8 @@ export function Board(): JSX.Element {
   const [isEditingName, setIsEditingName] = useState(false);
   const [bgColor, setBgColor] = useState('FFFFFF');
   const [progresBar, setProgresBar] = useState(0);
-
-  const { boardId } = useParams();
+  const { boardId = '' } = useParams();
+  const [renderList, setRenderList] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const onClose = (): void => setModal(!isModal);
 
@@ -40,8 +40,16 @@ export function Board(): JSX.Element {
     }
   });
 
+  useEffect(() => {
+    setRenderList(false);
+    setLists([]);
+    if (boardId) {
+      fetchBoardData(boardId, setLists, setBoardTitle, setInputValueNameBoard, setProgresBar);
+    }
+  }, [renderList]);
+
   return (
-    <div className={s.board} style={{ backgroundColor: bgColor }}>
+    <div className={s.board} style={{ background: bgColor }}>
       <LinearProgress
         variant="determinate"
         value={progresBar}
@@ -78,7 +86,7 @@ export function Board(): JSX.Element {
       </header>
       <div className={s.board_body}>
         {lists.map(({ id, title: listTitle, cards }) => (
-          <List key={id} id={id} title={listTitle} cards={cards} />
+          <List key={id} id={id} title={listTitle} cards={cards} setRenderList={setRenderList} />
         ))}
         <Button
           icon={<FaSquarePlus />}

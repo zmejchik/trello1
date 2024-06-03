@@ -15,7 +15,7 @@ import { createCard } from '../../../../utils/createCard';
 import { editNameList } from '../../../../utils/editNameList';
 import api from '../../../../api/request';
 
-function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
+function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList): JSX.Element {
   const [newCardName, setNewCardName] = useState('');
   const [isModal, setModal] = useState(false);
   const [cards, setCards] = useState(cardsArray);
@@ -27,7 +27,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
 
   const onClose = (): void => setModal(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { boardId } = useParams<{ boardId?: string }>();
+  const { boardId = '' } = useParams<{ boardId?: string }>();
 
   useEffect(() => {
     if (isEditingNameList) {
@@ -85,6 +85,7 @@ function List({ id, title: titleList, cards: cardsArray }: IList): JSX.Element {
         });
       }
     }
+    setRenderList(true);
   };
 
   return (
