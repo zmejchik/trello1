@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
@@ -10,6 +10,7 @@ import { BoardPreview } from './components/Board/BoardPrewiew';
 import { fetchBoards } from '../../utils/fetchBoards';
 import { toggleModal } from '../../utils/modalHandlers';
 
+export const BackgroundContext = createContext('#00000050');
 export function Home(): JSX.Element {
   const [homeTitle] = useState('Мої дошки');
   const [boards, setBoards] = useState<IBoard[]>([]);

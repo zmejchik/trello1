@@ -21,7 +21,9 @@ export function Board(): JSX.Element {
   const [isModal, setModal] = useState(false);
   const [inputValueNameBoard, setInputValueNameBoard] = useState('');
   const [isEditingName, setIsEditingName] = useState(false);
-  const [bgColor, setBgColor] = useState('FFFFFF');
+  const [bgColor, setBgColor] = useState(() => {
+    return localStorage.getItem('boardBgColor') || '#FFFFFF';
+  });
   const [progresBar, setProgresBar] = useState(0);
   const { boardId = '' } = useParams();
   const [renderList, setRenderList] = useState(false);
@@ -33,6 +35,10 @@ export function Board(): JSX.Element {
       fetchBoardData(boardId, setLists, setBoardTitle, setInputValueNameBoard, setProgresBar);
     }
   }, [boardId]);
+
+  useEffect(() => {
+    localStorage.setItem('boardBgColor', bgColor);
+  }, [bgColor]);
 
   useEffect(() => {
     if (isEditingName) {
@@ -49,7 +55,7 @@ export function Board(): JSX.Element {
   }, [renderList]);
 
   return (
-    <div className={s.board} style={{ background: bgColor }}>
+    <div className={s.board} style={{ background: `${bgColor}80` }}>
       <LinearProgress
         variant="determinate"
         value={progresBar}
