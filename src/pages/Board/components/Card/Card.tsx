@@ -10,6 +10,7 @@ import { dragStartHandler } from '../../../../utils/dragStartHandler';
 
 interface CardProps extends ICard {
   setDraggingCardId: (id: number) => void;
+  classSlot: string;
 }
 
 export function Card({
@@ -18,6 +19,7 @@ export function Card({
   list_id,
   updateCardList,
   setDraggingCardId,
+  classSlot,
 }: CardProps): JSX.Element {
   const [isEditingNameCard, setIsEditingNameCard] = useState(false);
   const [inputValueNameCard, setInputValueNameCard] = useState(cardTitle);
@@ -35,7 +37,7 @@ export function Card({
     <div className={s.wrapperCard}>
       <div
         id={cardId.toString()}
-        className={s.card}
+        className={`${s.card} ${s[classSlot]}`}
         draggable="true"
         onDragStart={(event): void => dragStartHandler(event, cardId, setDraggingCardId)}
         onClick={(): void => setIsEditingNameCard(true)}

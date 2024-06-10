@@ -4,15 +4,14 @@ import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
-import { Modal } from '../../common/components/ModalWindow/Modal';
 import SelectColor from '../../common/components/SelectColor/SelectColor';
 import { IList } from '../../common/interfaces/IList';
 import s from './board.module.scss';
 import Button from '../../common/components/Button/Button';
 import List from './components/List/List';
 import { fetchBoardData } from '../../utils/fetchBoardData';
-import { createList } from '../../utils/createList';
 import { editBoardName } from '../../utils/editBoardName';
+import ModalCreateNewList from '../../common/components/ModalCreateNewList/ModalCreateNewList';
 
 export function Board(): JSX.Element {
   const [boardTitle, setBoardTitle] = useState('');
@@ -101,24 +100,13 @@ export function Board(): JSX.Element {
           onClick={(): void => setModal(true)}
         />
       </div>
-      <Modal
-        visible={isModal}
-        title="Введіть назву нового списку"
-        inputValue={newListName}
-        placeholder="Назва нового списку"
-        setValue={setNewListName}
-        footer={
-          <button
-            onClick={(): Promise<void> => {
-              if (boardId) {
-                return createList(boardId, newListName, lists, setLists, setNewListName, onClose);
-              }
-              return Promise.resolve();
-            }}
-          >
-            Створити
-          </button>
-        }
+      <ModalCreateNewList
+        isModal={isModal}
+        newListName={newListName}
+        setNewListName={setNewListName}
+        boardId={boardId}
+        lists={lists}
+        setLists={setLists}
         onClose={onClose}
       />
     </div>

@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom';
 import s from './list.module.scss';
 import Button from '../../../../common/components/Button/Button';
 import { Card } from '../Card/Card';
-import Slot from '../../../../common/components/SlotForCard/SlotForCard';
 import { IList } from '../../../../common/interfaces/IList';
 import { Modal } from '../../../../common/components/ModalWindow/Modal';
 import { ICard } from '../../../../common/interfaces/ICard';
@@ -22,7 +21,7 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
   const [listName, setListName] = useState(titleList);
   const [isEditingNameList, setIsEditingNameList] = useState(false);
   const [inputValueNameList, setInputValueNameList] = useState(listName);
-  const [isDraggingCard, setIsDraggingCard] = useState(false);
+  const [, setIsDraggingCard] = useState(false);
   const [draggingCardId, setDraggingCardId] = useState<number>(-1);
 
   const onClose = (): void => setModal(false);
@@ -42,17 +41,18 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
 
   function dragLeaveHandler(): void {
     setIsDraggingCard(false);
+    // TODO edition frontend cards but with not fetch to backend server, only local change
+    const newCards = cards.map((card) =>
+      card.id === draggingCardId
+        ? {
+            id: -1,
+            title: '',
+            position: card.position,
+          }
+        : card
+    );
+    setCards(newCards);
   }
-
-  const addSlot = (cardId: number): void => {
-    if (!cards.some((card) => card.id === cardId)) {
-      setCards([...cards, { id: -1, title: '' }]);
-    }
-  };
-
-  const delSlot = (): void => {
-    setCards(cards.filter((card) => card.id !== -1));
-  };
 
   const dropHandler = async (event: React.DragEvent<HTMLDivElement>): Promise<void> => {
     event.preventDefault();
@@ -73,7 +73,6 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
           await api.delete(`/board/${boardId}/card/${cardId}`);
           await api.post(`/board/${boardId}/card/`, draggedCard);
           setIsDraggingCard(false);
-          delSlot();
           await updateCardList(boardId, id, setCards);
         }
       } catch (error) {
@@ -123,23 +122,21 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
         )}
 
         <div className={s.list_body}>
-          {cards.map(({ id: cardId, title: titleCard }: ICard) =>
-            isDraggingCard && draggingCardId === +id ? (
-              <Slot key={cardId} cardId={id} onDragOver={addSlot} onDragLeave={delSlot} />
-            ) : (
-              <Card
-                key={cardId}
-                id={cardId}
-                title={titleCard}
-                list_id={id}
-                updateCardList={(): Promise<void> =>
-                  boardId ? updateCardList(boardId, id, setCards) : Promise.resolve()
-                }
-                setDraggingCardId={setDraggingCardId}
-              />
-            )
-          )}
+          {cards.map(({ id: cardId, title: titleCard }: ICard) => (
+            <Card
+              key={cardId}
+              id={cardId}
+              title={titleCard}
+              list_id={id}
+              updateCardList={(): Promise<void> =>
+                boardId ? updateCardList(boardId, id, setCards) : Promise.resolve()
+              }
+              setDraggingCardId={setDraggingCardId}
+              classSlot={cardId === -1 ? 'slotCard' : ''}
+            />
+          ))}
         </div>
+
         <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />
       </div>
 
