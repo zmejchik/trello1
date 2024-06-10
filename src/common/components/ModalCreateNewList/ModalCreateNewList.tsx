@@ -13,7 +13,7 @@ interface ModalCreateNewListProps {
   onClose: () => void;
 }
 
-const ModalCreateNewList = ({
+function ModalCreateNewList({
   isModal,
   newListName,
   setNewListName,
@@ -21,7 +21,7 @@ const ModalCreateNewList = ({
   lists,
   setLists,
   onClose,
-}: ModalCreateNewListProps) => {
+}: ModalCreateNewListProps): JSX.Element {
   return (
     <Modal
       visible={isModal}
@@ -44,6 +44,6 @@ const ModalCreateNewList = ({
       onClose={onClose}
     />
   );
-};
+}
 
 export default ModalCreateNewList;
