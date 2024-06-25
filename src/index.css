@@ -8,6 +8,7 @@ body {
   display: flex;
   justify-content: center;
   background-image: url('/src/images/background.jpg');
+  background-size: cover;
 }
 
 code {

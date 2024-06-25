@@ -6,11 +6,11 @@ import { ICard } from '../../../../common/interfaces/ICard';
 import s from './card.module.scss';
 import { editNameCard } from '../../../../utils/editNameCard';
 import { deleteCard } from '../../../../utils/deleteCard';
-import { dragStartHandler } from '../../../../utils/dragStartHandler';
 
 interface CardProps extends ICard {
-  setDraggingCardId: (id: number) => void;
   classSlot: string;
+  onDragStart: (event: React.DragEvent<HTMLElement>, id: number) => void;
+  onDragEnter: (event: React.DragEvent<HTMLElement>, id: number) => void;
 }
 
 export function Card({
@@ -18,8 +18,9 @@ export function Card({
   title: cardTitle,
   list_id,
   updateCardList,
-  setDraggingCardId,
   classSlot,
+  onDragStart,
+  onDragEnter,
 }: CardProps): JSX.Element {
   const [isEditingNameCard, setIsEditingNameCard] = useState(false);
   const [inputValueNameCard, setInputValueNameCard] = useState(cardTitle);
@@ -39,8 +40,9 @@ export function Card({
         id={cardId.toString()}
         className={`${s.card} ${s[classSlot]}`}
         draggable="true"
-        onDragStart={(event): void => dragStartHandler(event, cardId, setDraggingCardId)}
         onClick={(): void => setIsEditingNameCard(true)}
+        onDragStart={(event: React.DragEvent<HTMLElement>): void => onDragStart(event, cardId)}
+        onDragEnter={(event: React.DragEvent<HTMLElement>): void => onDragEnter(event, cardId)}
       >
         {isEditingNameCard ? (
           <h2 className={s.listH2}>

@@ -14,6 +14,10 @@ export const updateCardList = async (
   try {
     const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
     const newCards = data.lists.find((list) => list.id === +listId)?.cards || [];
+    newCards.forEach((card, index) => {
+      const newCard = { ...card, position: index + 1 };
+      Object.assign(card, newCard);
+    });
     setCards(newCards);
   } catch (error) {
     Swal.fire({
