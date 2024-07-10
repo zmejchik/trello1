@@ -4,6 +4,8 @@ import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
+import store, { RootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
 import SelectColor from '../../common/components/SelectColor/SelectColor';
 import { IList } from '../../common/interfaces/IList';
 import s from './board.module.scss';
@@ -12,6 +14,7 @@ import List from './components/List/List';
 import { fetchBoardData } from '../../utils/fetchBoardData';
 import { editBoardName } from '../../utils/editBoardName';
 import ModalCreateNewList from '../../common/components/ModalCreateNewList/ModalCreateNewList';
+import ModalCardWindow from './components/ModalCardWindow/ModalCardWindow';
 
 export function Board(): JSX.Element {
   const [boardTitle, setBoardTitle] = useState('');
@@ -28,6 +31,7 @@ export function Board(): JSX.Element {
   const [renderList, setRenderList] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const onClose = (): void => setModal(!isModal);
+  const isModalOpen = useSelector((state: RootState) => state.data.modal.isOpen);
 
   useEffect(() => {
     if (boardId) {
@@ -52,6 +56,13 @@ export function Board(): JSX.Element {
       fetchBoardData(boardId, setLists, setBoardTitle, setInputValueNameBoard, setProgresBar);
     }
   }, [renderList]);
+
+  const mapStateToProps = (state: { modal: { isOpen: boolean }; cards: any }) => {
+    return {
+      isModalOpen: state.modal.isOpen,
+      cards: state.cards,
+    };
+  };
 
   return (
     <div className={s.board} style={{ background: `${bgColor}80` }}>
@@ -109,6 +120,7 @@ export function Board(): JSX.Element {
         setLists={setLists}
         onClose={onClose}
       />
+      {isModalOpen && <ModalCardWindow />}
     </div>
   );
 }

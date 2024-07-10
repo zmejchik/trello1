@@ -220,6 +220,8 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
                   id={cardId}
                   title={titleCard}
                   list_id={id}
+                  list_title={titleList}
+                  cards={cards}
                   updateCardList={(): Promise<void> =>
                     boardId ? updateCardList(boardId, id, setCards) : Promise.resolve()
                   }
@@ -247,6 +249,11 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
                 ? createCard(boardId, id, newCardName, cards, setCards, setNewCardName, onClose)
                 : Promise.resolve()
             }
+            onKeyDown={(ev): void => {
+              if (ev.key === 'Enter' && boardId) {
+                createCard(boardId, id, newCardName, cards, setCards, setNewCardName, onClose);
+              }
+            }}
           >
             Створити
           </button>
