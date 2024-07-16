@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FaClipboard } from 'react-icons/fa';
 import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
@@ -114,6 +114,7 @@ export function Board(): JSX.Element {
         onClose={onClose}
       />
       {isModalOpen && <ModalCardWindow />}
+      <Outlet />
     </div>
   );
 }
