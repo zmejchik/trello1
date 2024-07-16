@@ -1,16 +1,17 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { visibleModalForCard } from '../../../../redux/dataSlice';
 import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
 
 function ModalCardWindow(): JSX.Element {
   const dispatch = useDispatch();
-
   const data = useSelector((state: RootState) =>
     state.data.cards.find((card) => card.id.toString() === state.data.cardId)
   );
   const listName = useSelector((state: RootState) => state.data.list_name);
+  const navigate = useNavigate();
   return (
     <div className={s.overlay}>
       <div className={s.wrapper}>
@@ -36,6 +37,7 @@ function ModalCardWindow(): JSX.Element {
           <div
             onClick={(): void => {
               dispatch(visibleModalForCard());
+              navigate(-1);
             }}
           >
             X

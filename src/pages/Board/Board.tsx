@@ -4,8 +4,8 @@ import { FaSquarePlus } from 'react-icons/fa6';
 import { MdKeyboardDoubleArrowLeft } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
-import store, { RootState } from '../../redux/store';
 import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 import SelectColor from '../../common/components/SelectColor/SelectColor';
 import { IList } from '../../common/interfaces/IList';
 import s from './board.module.scss';
@@ -56,13 +56,6 @@ export function Board(): JSX.Element {
       fetchBoardData(boardId, setLists, setBoardTitle, setInputValueNameBoard, setProgresBar);
     }
   }, [renderList]);
-
-  const mapStateToProps = (state: { modal: { isOpen: boolean }; cards: any }) => {
-    return {
-      isModalOpen: state.modal.isOpen,
-      cards: state.cards,
-    };
-  };
 
   return (
     <div className={s.board} style={{ background: `${bgColor}80` }}>
