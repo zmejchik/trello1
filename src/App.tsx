@@ -9,8 +9,7 @@ function App(): JSX.Element {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-
-      <Route path="/board/:boardId/*" element={<Board />}>
+      <Route path="/board/:boardId/" element={<Board />}>
         <Route path="card/:cardId" element={<ModalCardWindow />} />
       </Route>
     </Routes>

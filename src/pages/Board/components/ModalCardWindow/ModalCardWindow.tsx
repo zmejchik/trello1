@@ -1,17 +1,89 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { visibleModalForCard } from '../../../../redux/dataSlice';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  fetchDataFailure,
+  fetchDataStart,
+  fetchDataSuccess,
+  setCardId,
+  setListId,
+  setListTitle,
+  visibleModalForCard,
+} from '../../../../redux/dataSlice';
 import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
+import api from '../../../../api/request';
+import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
+
+interface Card {
+  id: number;
+  title: string;
+  description: string;
+  position: number;
+  users: [];
+  custom: {
+    deadline: number;
+  };
+  created_at: number;
+}
+
+interface List {
+  id: number;
+  title: string;
+  position: number;
+  cards: Card[];
+}
+
+interface Board {
+  title: string;
+  custom: {
+    background: string;
+  };
+  users: {
+    id: number;
+    username: string;
+  }[];
+  lists: List[];
+}
 
 function ModalCardWindow(): JSX.Element {
+  const { boardId, cardId } = useParams<{ boardId: string; cardId: string }>();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (boardId && cardId) {
+      dispatch(setCardId(cardId));
+      dispatch(fetchDataStart());
+      api
+        .get(`/board/${boardId}`)
+        .then((response) => {
+          const data: Board = response.data || response;
+          // find the listId by the cardId
+          const listId = findListIdByCardId(data, +cardId);
+          dispatch(setListId(listId ? listId.toString() : ''));
+          const list: List | undefined = data.lists.find((listItem) => listItem.id === listId);
+          if (list) {
+            // find cards array
+            const { cards } = list;
+            dispatch(fetchDataSuccess(cards));
+            const listTitle = list.title;
+            dispatch(setListTitle(listTitle));
+          }
+          dispatch(fetchDataSuccess(response.data));
+        })
+        .catch((error) => {
+          dispatch(fetchDataFailure(error.message));
+        });
+    }
+  }, [boardId, cardId, dispatch]);
+
   const data = useSelector((state: RootState) =>
     state.data.cards.find((card) => card.id.toString() === state.data.cardId)
   );
+
   const listName = useSelector((state: RootState) => state.data.list_name);
-  const navigate = useNavigate();
+
   return (
     <div className={s.overlay}>
       <div className={s.wrapper}>
