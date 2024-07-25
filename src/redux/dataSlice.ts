@@ -94,6 +94,9 @@ const dataSlice = createSlice({
     setListTitle(state, action: PayloadAction<string>) {
       state.list_name = action.payload;
     },
+    setBoardId(state, action: PayloadAction<string>) {
+      state.boardId = action.payload;
+    },
   },
 });
 
@@ -105,6 +108,7 @@ export const {
   setListId,
   setListTitle,
   setCardId,
+  setBoardId,
   visibleModalForCard,
 } = dataSlice.actions;
 

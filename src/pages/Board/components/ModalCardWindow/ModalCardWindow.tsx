@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -8,12 +8,14 @@ import {
   setCardId,
   setListId,
   setListTitle,
+  setBoardId,
   visibleModalForCard,
 } from '../../../../redux/dataSlice';
 import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
 import api from '../../../../api/request';
 import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
+import CardModal from './components/ActionModal/CardModal';
 
 interface Card {
   id: number;
@@ -48,6 +50,9 @@ interface Board {
 
 function ModalCardWindow(): JSX.Element {
   const { boardId, cardId } = useParams<{ boardId: string; cardId: string }>();
+  const [isVisibleModalWindow, setVisibleModalWindow] = useState(false);
+  const [dataBoard, setDataBoard] = useState<Board | null>(null);
+  const [typeCardModal, setTypeCardModal] = useState('copy');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -59,6 +64,7 @@ function ModalCardWindow(): JSX.Element {
         .get(`/board/${boardId}`)
         .then((response) => {
           const data: Board = response.data || response;
+          setDataBoard(data);
           // find the listId by the cardId
           const listId = findListIdByCardId(data, +cardId);
           dispatch(setListId(listId ? listId.toString() : ''));
@@ -71,6 +77,7 @@ function ModalCardWindow(): JSX.Element {
             dispatch(setListTitle(listTitle));
           }
           dispatch(fetchDataSuccess(response.data));
+          dispatch(setBoardId(boardId));
         })
         .catch((error) => {
           dispatch(fetchDataFailure(error.message));
@@ -83,6 +90,11 @@ function ModalCardWindow(): JSX.Element {
   );
 
   const listName = useSelector((state: RootState) => state.data.list_name);
+
+  function handleCardModalWindow(type: string): void {
+    setVisibleModalWindow(true);
+    setTypeCardModal(type);
+  }
 
   return (
     <div className={s.overlay}>
@@ -115,11 +127,29 @@ function ModalCardWindow(): JSX.Element {
             X
           </div>
           <h2>Дії над карткою</h2>
-          <button type="button">Копіювати</button>
-          <button type="button">Перемістити</button>
-          <button type="button">Архівувати</button>
+          <button type="button" onClick={(): void => handleCardModalWindow('copy')}>
+            Копіювати
+          </button>
+          <button type="button" onClick={(): void => handleCardModalWindow('move')}>
+            Перемістити
+          </button>
+          <button type="button" onClick={(): void => handleCardModalWindow('edit')}>
+            Редагувати
+          </button>
         </div>
       </div>
+      {isVisibleModalWindow && (
+        <CardModal
+          type={typeCardModal}
+          boardId={boardId || ''}
+          listId={
+            dataBoard?.lists.find((list) => list.cards.some((card) => card.id.toString() === cardId))?.id.toString() ||
+            ''
+          }
+          cardTitle={data?.title || ''}
+          onClose={(): void => setVisibleModalWindow(false)}
+        />
+      )}
     </div>
   );
 }
