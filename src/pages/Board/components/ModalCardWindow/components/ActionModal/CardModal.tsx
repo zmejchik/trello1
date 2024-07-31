@@ -8,6 +8,19 @@ interface ModalCardProps {
   boardId: string;
   listId: string;
   cardTitle: string;
+  cardData:
+    | {
+        id: number;
+        title: string;
+        description: string;
+        position: number;
+        users: string[];
+        custom: {
+          deadline: number;
+        };
+        created_at: number;
+      }
+    | undefined;
   onClose: () => void;
 }
 
@@ -22,13 +35,13 @@ interface AllLists {
   position: number;
 }
 
-export function CardModal({ type, boardId, listId, cardTitle, onClose }: ModalCardProps): ReactElement {
+export function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: ModalCardProps): ReactElement {
   const [listAllTitlesBoards, setListAllTitlesBoards] = useState<{ id: string; title: string }[]>([]);
   const [listAllTitlesLists, setListAllTitlesLists] = useState<{ id: string; title: string }[]>([]);
   const [selectedBoardTitle, setSelectedBoardTitle] = useState('');
-  const [selectedBoardId, setSelectedBoardId] = useState('');
+  const [selectedBoardId, setSelectedBoardId] = useState(boardId);
   const [selectedListTitle, setSelectedListTitle] = useState('');
-  const [selectedListdId, setSelectedListId] = useState('');
+  const [selectedListId, setSelectedListId] = useState(listId);
 
   const handleChangeBoardTitle = (event: SelectChangeEvent<string>): void => {
     const boardTitleSelected = event.target.value;
@@ -86,6 +99,7 @@ export function CardModal({ type, boardId, listId, cardTitle, onClose }: ModalCa
     setSelectedListTitle(listTitleSelected);
     setSelectedListId(listIdSelected);
   };
+
   const listAllListForSelected =
     listAllTitlesLists != null
       ? listAllTitlesLists.map((list) => (
@@ -94,6 +108,25 @@ export function CardModal({ type, boardId, listId, cardTitle, onClose }: ModalCa
           </MenuItem>
         ))
       : '';
+
+  const sendDataToServer = async (): Promise<void> => {
+    const updatedCardData = {
+      ...cardData,
+      list_id: selectedListId,
+    };
+    switch (type) {
+      case 'copy':
+        await api.post(`/board/${selectedBoardId}/card`, updatedCardData);
+        break;
+      case 'move':
+        await api.delete(`/board/${boardId}/card/${cardData?.id}`);
+        await api.post(`/board/${selectedBoardId}/card`, updatedCardData);
+        break;
+      default:
+        break;
+    }
+    onClose();
+  };
 
   return (
     <div className={s.modal}>
@@ -133,8 +166,8 @@ export function CardModal({ type, boardId, listId, cardTitle, onClose }: ModalCa
             {listAllListForSelected}
           </Select>
         </FormControl>
-        <button type="button" onClick={onClose} className={s.closeButton}>
-          Закрити
+        <button type="button" onClick={sendDataToServer} className={s.closeButton}>
+          Виконати операцію
         </button>
       </div>
     </div>

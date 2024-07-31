@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -10,12 +10,15 @@ import {
   setListTitle,
   setBoardId,
   visibleModalForCard,
+  setDescription,
 } from '../../../../redux/dataSlice';
 import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
 import api from '../../../../api/request';
 import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
 import CardModal from './components/ActionModal/CardModal';
+import { deleteCard } from '../../../../utils/deleteCard';
+import { ICard } from '../../../../common/interfaces/ICard';
 
 interface Card {
   id: number;
@@ -28,7 +31,6 @@ interface Card {
   };
   created_at: number;
 }
-
 interface List {
   id: number;
   title: string;
@@ -72,7 +74,7 @@ function ModalCardWindow(): JSX.Element {
           if (list) {
             // find cards array
             const { cards } = list;
-            dispatch(fetchDataSuccess(cards));
+            dispatch(fetchDataSuccess(cards as unknown as ICard[]));
             const listTitle = list.title;
             dispatch(setListTitle(listTitle));
           }
@@ -92,8 +94,21 @@ function ModalCardWindow(): JSX.Element {
   const listName = useSelector((state: RootState) => state.data.list_name);
 
   function handleCardModalWindow(type: string): void {
-    setVisibleModalWindow(true);
     setTypeCardModal(type);
+    if (type === 'delete' && cardId !== undefined && boardId !== undefined) {
+      deleteCard(+cardId, boardId).then(() => {
+        dispatch(visibleModalForCard());
+        navigate(-1);
+      });
+    } else {
+      setVisibleModalWindow(true);
+    }
+  }
+
+  function handleDescription(event: ChangeEvent<HTMLTextAreaElement>): void {
+    if (cardId !== undefined) {
+      dispatch(setDescription({ cardId: +cardId, description: event.target.value }));
+    }
   }
 
   return (
@@ -114,7 +129,7 @@ function ModalCardWindow(): JSX.Element {
           </div>
           <div>
             <h2>Опис</h2>
-            <textarea maxLength={5000} defaultValue={data?.description} />
+            <textarea maxLength={5000} defaultValue={data?.description} onChange={handleDescription} />
           </div>
         </div>
         <div className={s.operations}>
@@ -133,8 +148,8 @@ function ModalCardWindow(): JSX.Element {
           <button type="button" onClick={(): void => handleCardModalWindow('move')}>
             Перемістити
           </button>
-          <button type="button" onClick={(): void => handleCardModalWindow('edit')}>
-            Редагувати
+          <button type="button" onClick={(): void => handleCardModalWindow('delete')}>
+            Видалити
           </button>
         </div>
       </div>
@@ -148,6 +163,7 @@ function ModalCardWindow(): JSX.Element {
           }
           cardTitle={data?.title || ''}
           onClose={(): void => setVisibleModalWindow(false)}
+          cardData={data}
         />
       )}
     </div>

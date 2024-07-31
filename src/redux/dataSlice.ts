@@ -1,22 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ICard } from '../common/interfaces/ICard';
 
 interface ModalState {
   isOpen: boolean;
 }
 
+interface Card {
+  id: number;
+  title: string;
+  description: string;
+  position: number;
+  users: string[];
+  custom: {
+    deadline: number;
+  };
+  created_at: number;
+}
+
 interface DataState {
   modal: ModalState;
-  cards: Array<{
-    id: number;
-    title: string;
-    description: string;
-    position: number;
-    users: [];
-    custom: {
-      deadline: number;
-    };
-    created_at: number;
-  }>;
+  cards: Card[];
   listId: string;
   list_name: string;
   cardId: string | null;
@@ -41,61 +44,79 @@ const dataSlice = createSlice({
   initialState,
   reducers: {
     visibleModalForCard(state) {
-      if (state.modal.isOpen) {
-        state.modal.isOpen = false;
-      } else {
-        state.modal.isOpen = true;
-      }
+      return {
+        ...state,
+        modal: { isOpen: !state.modal.isOpen },
+      };
     },
     fetchDataStart(state) {
-      state.loading = true;
-      state.error = null;
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
     },
-    fetchDataSuccess(
-      state,
-      action: PayloadAction<
-        Array<{
-          id: number;
-          title: string;
-          description?: string;
-          position?: number;
-          users?: [];
-          custom?: {
-            deadline: number;
-          };
-          created_at?: number;
-        }>
-      >
-    ) {
-      state.loading = false;
-      state.cards = action.payload.map((card) => ({
-        id: card.id,
-        title: card.title,
+    fetchDataSuccess(state, action: PayloadAction<ICard[]>) {
+      const cards = action.payload.map((card) => ({
+        ...card,
         description: card.description ?? '',
         position: card.position ?? 0,
         users: card.users ?? [],
         custom: card.custom ?? { deadline: 0 },
         created_at: card.created_at ?? Date.now(),
-      }));
+      })) as Card[];
+
+      return {
+        ...state,
+        loading: false,
+        cards,
+      };
     },
     fetchDataFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     },
     toggleModal(state) {
-      state.modal.isOpen = !state.modal.isOpen;
+      return {
+        ...state,
+        modal: { isOpen: !state.modal.isOpen },
+      };
     },
     setListId(state, action: PayloadAction<string>) {
-      state.listId = action.payload;
+      return {
+        ...state,
+        listId: action.payload,
+      };
     },
     setCardId(state, action: PayloadAction<string>) {
-      state.cardId = action.payload;
+      return {
+        ...state,
+        cardId: action.payload,
+      };
     },
     setListTitle(state, action: PayloadAction<string>) {
-      state.list_name = action.payload;
+      return {
+        ...state,
+        list_name: action.payload,
+      };
     },
     setBoardId(state, action: PayloadAction<string>) {
-      state.boardId = action.payload;
+      return {
+        ...state,
+        boardId: action.payload,
+      };
+    },
+    setDescription(state, action: PayloadAction<{ cardId: number; description: string }>) {
+      const { cardId, description } = action.payload;
+      const cards = state.cards.map((card) => (card.id === cardId ? { ...card, description } : card));
+
+      return {
+        ...state,
+        cards,
+      };
     },
   },
 });
@@ -110,6 +131,7 @@ export const {
   setCardId,
   setBoardId,
   visibleModalForCard,
+  setDescription,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;
