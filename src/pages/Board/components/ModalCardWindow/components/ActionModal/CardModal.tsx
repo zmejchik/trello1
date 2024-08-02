@@ -1,7 +1,9 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import api from '../../../../../../api/request';
 import s from './CardModal.module.scss';
+import { visibleModalForCard } from '../../../../../../redux/dataSlice';
 
 interface ModalCardProps {
   type: string;
@@ -108,7 +110,7 @@ export function CardModal({ type, boardId, listId, cardTitle, cardData, onClose 
           </MenuItem>
         ))
       : '';
-
+  const dispatch = useDispatch();
   const sendDataToServer = async (): Promise<void> => {
     const updatedCardData = {
       ...cardData,
@@ -125,6 +127,7 @@ export function CardModal({ type, boardId, listId, cardTitle, cardData, onClose 
       default:
         break;
     }
+    dispatch(visibleModalForCard());
     onClose();
   };
 

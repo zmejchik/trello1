@@ -98,7 +98,7 @@ function ModalCardWindow(): JSX.Element {
     if (type === 'delete' && cardId !== undefined && boardId !== undefined) {
       deleteCard(+cardId, boardId).then(() => {
         dispatch(visibleModalForCard());
-        navigate(-1);
+        navigate(`/board/${boardId}`);
       });
     } else {
       setVisibleModalWindow(true);
@@ -136,7 +136,7 @@ function ModalCardWindow(): JSX.Element {
           <div
             onClick={(): void => {
               dispatch(visibleModalForCard());
-              navigate(-1);
+              navigate(`/board/${boardId}`);
             }}
           >
             X

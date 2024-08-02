@@ -52,10 +52,10 @@ export function Board(): JSX.Element {
   useEffect(() => {
     setRenderList(false);
     setLists([]);
-    if (boardId) {
+    if (boardId || !isModalOpen) {
       fetchBoardData(boardId, setLists, setBoardTitle, setInputValueNameBoard, setProgresBar);
     }
-  }, [renderList]);
+  }, [renderList, isModalOpen]);
 
   return (
     <div className={s.board} style={{ background: `${bgColor}80` }}>
