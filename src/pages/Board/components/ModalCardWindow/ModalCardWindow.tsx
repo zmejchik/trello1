@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Input } from '@mui/material';
 import {
   fetchDataFailure,
   fetchDataStart,
@@ -11,6 +12,7 @@ import {
   setBoardId,
   visibleModalForCard,
   setDescription,
+  toggleModal,
 } from '../../../../redux/dataSlice';
 import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
@@ -55,6 +57,7 @@ function ModalCardWindow(): JSX.Element {
   const [isVisibleModalWindow, setVisibleModalWindow] = useState(false);
   const [dataBoard, setDataBoard] = useState<Board | null>(null);
   const [typeCardModal, setTypeCardModal] = useState('copy');
+  const [isEditCardTitle, setIsEditCardTitle] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -92,11 +95,13 @@ function ModalCardWindow(): JSX.Element {
   );
 
   const listName = useSelector((state: RootState) => state.data.list_name);
+  const listId: string = useSelector((state: RootState) => state.data.listId);
 
   function handleCardModalWindow(type: string): void {
     setTypeCardModal(type);
     if (type === 'delete' && cardId !== undefined && boardId !== undefined) {
       deleteCard(+cardId, boardId).then(() => {
+        setVisibleModalWindow(false);
         dispatch(visibleModalForCard());
         navigate(`/board/${boardId}`);
       });
@@ -111,11 +116,39 @@ function ModalCardWindow(): JSX.Element {
     }
   }
 
+  const sendNewDataCardOnServer = async (): Promise<void> => {
+    if (data !== undefined && listId !== undefined && cardId !== undefined) {
+      await api.put(`/board/${boardId}/card/${cardId}`, {
+        description: data.description,
+        list_id: +listId,
+      });
+      dispatch(setDescription({ cardId: +cardId, description: data.description }));
+      setVisibleModalWindow(!isVisibleModalWindow);
+      dispatch(visibleModalForCard());
+      dispatch(toggleModal());
+    }
+  };
+
   return (
     <div className={s.overlay}>
       <div className={s.wrapper}>
         <div className={s.infopart}>
-          <h2>Назва картки {data?.title}</h2>
+          <div className={s.titleContainer}>
+            {!isEditCardTitle ? (
+              <h2 onClick={(): void => setIsEditCardTitle(!isEditCardTitle)}>Назва картки {data?.title}</h2>
+            ) : (
+              <h2>
+                Назва картки{' '}
+                <Input
+                  defaultValue={data?.title}
+                  classes={{
+                    root: s.inputRoot,
+                    input: s.inputInput,
+                  }}
+                />
+              </h2>
+            )}
+          </div>
           <p>
             В списку <u>{listName}</u>
           </p>
@@ -137,6 +170,7 @@ function ModalCardWindow(): JSX.Element {
             onClick={(): void => {
               dispatch(visibleModalForCard());
               navigate(`/board/${boardId}`);
+              sendNewDataCardOnServer();
             }}
           >
             X

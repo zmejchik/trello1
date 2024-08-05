@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import api from '../../../../../../api/request';
 import s from './CardModal.module.scss';
@@ -37,13 +37,28 @@ interface AllLists {
   position: number;
 }
 
-export function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: ModalCardProps): ReactElement {
+function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: ModalCardProps): ReactElement {
   const [listAllTitlesBoards, setListAllTitlesBoards] = useState<{ id: string; title: string }[]>([]);
   const [listAllTitlesLists, setListAllTitlesLists] = useState<{ id: string; title: string }[]>([]);
   const [selectedBoardTitle, setSelectedBoardTitle] = useState('');
   const [selectedBoardId, setSelectedBoardId] = useState(boardId);
   const [selectedListTitle, setSelectedListTitle] = useState('');
   const [selectedListId, setSelectedListId] = useState(listId);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent): void => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleChangeBoardTitle = (event: SelectChangeEvent<string>): void => {
     const boardTitleSelected = event.target.value;
@@ -133,7 +148,7 @@ export function CardModal({ type, boardId, listId, cardTitle, cardData, onClose 
 
   return (
     <div className={s.modal}>
-      <div className={s.modalContent}>
+      <div className={s.modalContent} ref={modalRef}>
         <h2>Деталі дій {type}</h2>
         <FormControl sx={{ mb: 2, minWidth: 250 }} size="small">
           <TextField id="card_name" label="Назва картки" defaultValue={cardTitle} margin="normal" fullWidth />
