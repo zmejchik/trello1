@@ -1,7 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Input } from '@mui/material';
+import { Input, Modal, Box, Typography } from '@mui/material';
+import Swal from 'sweetalert2';
 import {
   fetchDataFailure,
   fetchDataStart,
@@ -12,7 +13,7 @@ import {
   setBoardId,
   visibleModalForCard,
   setDescription,
-  toggleModal,
+  setCardTitle,
 } from '../../../../redux/dataSlice';
 import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
@@ -58,8 +59,12 @@ function ModalCardWindow(): JSX.Element {
   const [dataBoard, setDataBoard] = useState<Board | null>(null);
   const [typeCardModal, setTypeCardModal] = useState('copy');
   const [isEditCardTitle, setIsEditCardTitle] = useState(false);
+  const [localCardTitle, setLocalCardTitle] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleClose = (): void => setSuccessMessage(false);
 
   useEffect(() => {
     if (boardId && cardId) {
@@ -97,6 +102,12 @@ function ModalCardWindow(): JSX.Element {
   const listName = useSelector((state: RootState) => state.data.list_name);
   const listId: string = useSelector((state: RootState) => state.data.listId);
 
+  useEffect(() => {
+    if (data) {
+      setLocalCardTitle(data.title); // Initialize localCardTitle with the card title from the store
+    }
+  }, [data]);
+
   function handleCardModalWindow(type: string): void {
     setTypeCardModal(type);
     if (type === 'delete' && cardId !== undefined && boardId !== undefined) {
@@ -115,92 +126,152 @@ function ModalCardWindow(): JSX.Element {
       dispatch(setDescription({ cardId: +cardId, description: event.target.value }));
     }
   }
+  const handleTitleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    setLocalCardTitle(event.target.value); // Update the localCardTitle state
+  };
+
+  const handleTitleChange = (): void => {
+    if (cardId !== undefined) {
+      dispatch(setCardTitle({ title: localCardTitle }));
+      setIsEditCardTitle(false);
+    }
+  };
+
+  const handleTitleClick = (): void => {
+    setIsEditCardTitle(true);
+  };
 
   const sendNewDataCardOnServer = async (): Promise<void> => {
     if (data !== undefined && listId !== undefined && cardId !== undefined) {
-      await api.put(`/board/${boardId}/card/${cardId}`, {
-        description: data.description,
-        list_id: +listId,
-      });
-      dispatch(setDescription({ cardId: +cardId, description: data.description }));
-      setVisibleModalWindow(!isVisibleModalWindow);
-      dispatch(visibleModalForCard());
-      dispatch(toggleModal());
+      try {
+        await api.put(`/board/${boardId}/card/${cardId}`, {
+          description: data.description,
+          title: data.title,
+          list_id: +listId,
+        });
+        dispatch(setDescription({ cardId: +cardId, description: data.description }));
+        setSuccessMessage(true);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Ой...',
+          text: 'Помилка при зміні інформації картки',
+        });
+      }
     }
   };
 
   return (
-    <div className={s.overlay}>
-      <div className={s.wrapper}>
-        <div className={s.infopart}>
-          <div className={s.titleContainer}>
-            {!isEditCardTitle ? (
-              <h2 onClick={(): void => setIsEditCardTitle(!isEditCardTitle)}>Назва картки {data?.title}</h2>
-            ) : (
-              <h2>
-                Назва картки{' '}
-                <Input
-                  defaultValue={data?.title}
-                  classes={{
-                    root: s.inputRoot,
-                    input: s.inputInput,
-                  }}
-                />
-              </h2>
-            )}
+    <>
+      <div className={s.overlay}>
+        <div className={s.wrapper}>
+          <div className={s.infopart}>
+            <div className={s.titleContainer}>
+              {!isEditCardTitle ? (
+                <h2 onClick={handleTitleClick}>Назва картки {data?.title}</h2>
+              ) : (
+                <h2>
+                  Назва картки{' '}
+                  <Input
+                    defaultValue={data?.title}
+                    onBlur={handleTitleChange}
+                    onChange={handleTitleInputChange}
+                    classes={{
+                      root: s.inputRoot,
+                      input: s.inputInput,
+                    }}
+                  />
+                </h2>
+              )}
+            </div>
+            <p>
+              В списку <u>{listName}</u>
+            </p>
+            <h3>УЧАСНИКИ</h3>
+            <div className={s.users}>
+              <div className={s.user}>1</div>
+              <div className={s.user}>2</div>
+              <div className={s.user}>3</div>
+              <div className={s.user}>+</div>
+              <button type="button">Приєднатись</button>
+            </div>
+            <div>
+              <h2>Опис</h2>
+              <textarea maxLength={5000} defaultValue={data?.description} onChange={handleDescription} />
+            </div>
           </div>
-          <p>
-            В списку <u>{listName}</u>
-          </p>
-          <h3>УЧАСНИКИ</h3>
-          <div className={s.users}>
-            <div className={s.user}>1</div>
-            <div className={s.user}>2</div>
-            <div className={s.user}>3</div>
-            <div className={s.user}>+</div>
-            <button type="button">Приєднатись</button>
-          </div>
-          <div>
-            <h2>Опис</h2>
-            <textarea maxLength={5000} defaultValue={data?.description} onChange={handleDescription} />
+          <div className={s.operations}>
+            <div
+              onClick={(): void => {
+                dispatch(visibleModalForCard());
+                navigate(`/board/${boardId}`);
+              }}
+            >
+              X
+            </div>
+            <h2>Дії над карткою</h2>
+            <button type="button" onClick={(): void => handleCardModalWindow('copy')}>
+              Копіювати
+            </button>
+            <button type="button" onClick={(): void => handleCardModalWindow('move')}>
+              Перемістити
+            </button>
+            <button type="button" onClick={(): void => handleCardModalWindow('delete')}>
+              Видалити
+            </button>
+            <button
+              type="button"
+              onClick={(): void => {
+                sendNewDataCardOnServer();
+              }}
+            >
+              Зберегти зміни
+            </button>
           </div>
         </div>
-        <div className={s.operations}>
-          <div
-            onClick={(): void => {
-              dispatch(visibleModalForCard());
-              navigate(`/board/${boardId}`);
-              sendNewDataCardOnServer();
-            }}
-          >
-            X
-          </div>
-          <h2>Дії над карткою</h2>
-          <button type="button" onClick={(): void => handleCardModalWindow('copy')}>
-            Копіювати
-          </button>
-          <button type="button" onClick={(): void => handleCardModalWindow('move')}>
-            Перемістити
-          </button>
-          <button type="button" onClick={(): void => handleCardModalWindow('delete')}>
-            Видалити
-          </button>
-        </div>
+        {isVisibleModalWindow && (
+          <CardModal
+            type={typeCardModal}
+            boardId={boardId || ''}
+            listId={
+              dataBoard?.lists
+                .find((list) => list.cards.some((card) => card.id.toString() === cardId))
+                ?.id.toString() || ''
+            }
+            cardTitle={data?.title || ''}
+            onClose={(): void => setVisibleModalWindow(false)}
+            cardData={data}
+          />
+        )}
       </div>
-      {isVisibleModalWindow && (
-        <CardModal
-          type={typeCardModal}
-          boardId={boardId || ''}
-          listId={
-            dataBoard?.lists.find((list) => list.cards.some((card) => card.id.toString() === cardId))?.id.toString() ||
-            ''
-          }
-          cardTitle={data?.title || ''}
-          onClose={(): void => setVisibleModalWindow(false)}
-          cardData={data}
-        />
-      )}
-    </div>
+      <Modal
+        open={successMessage}
+        onClose={handleClose}
+        aria-labelledby="success-modal-title"
+        aria-describedby="success-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="success-modal-title" variant="h6" component="h2">
+            Успіх!
+          </Typography>
+          <Typography id="success-modal-description" sx={{ mt: 2 }}>
+            Картка змінена успішно.
+          </Typography>
+        </Box>
+      </Modal>
+    </>
   );
 }
 

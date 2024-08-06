@@ -97,6 +97,13 @@ const dataSlice = createSlice({
         cardId: action.payload,
       };
     },
+    setCardTitle(state, action: PayloadAction<{ title: string }>) {
+      const { title } = action.payload;
+      const cardCurrent = state.cards.find((card) => card.id.toString() === state.cardId);
+      if (cardCurrent) {
+        cardCurrent.title = title.trim();
+      }
+    },
     setListTitle(state, action: PayloadAction<string>) {
       return {
         ...state,
@@ -132,6 +139,7 @@ export const {
   setBoardId,
   visibleModalForCard,
   setDescription,
+  setCardTitle,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;
