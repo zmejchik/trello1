@@ -22,24 +22,7 @@ import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
 import CardModal from './components/ActionModal/CardModal';
 import { deleteCard } from '../../../../utils/deleteCard';
 import { ICard } from '../../../../common/interfaces/ICard';
-
-interface Card {
-  id: number;
-  title: string;
-  description: string;
-  position: number;
-  users: [];
-  custom: {
-    deadline: number;
-  };
-  created_at: number;
-}
-interface List {
-  id: number;
-  title: string;
-  position: number;
-  cards: Card[];
-}
+import { IList } from '../../../../common/interfaces/IList';
 
 interface Board {
   title: string;
@@ -50,7 +33,7 @@ interface Board {
     id: number;
     username: string;
   }[];
-  lists: List[];
+  lists: IList[];
 }
 
 function ModalCardWindow(): JSX.Element {
@@ -78,7 +61,7 @@ function ModalCardWindow(): JSX.Element {
           // find the listId by the cardId
           const listId = findListIdByCardId(data, +cardId);
           dispatch(setListId(listId ? listId.toString() : ''));
-          const list: List | undefined = data.lists.find((listItem) => listItem.id === listId);
+          const list: IList | undefined = data.lists.find((listItem) => listItem.id === listId);
           if (list) {
             // find cards array
             const { cards } = list;
@@ -160,6 +143,22 @@ function ModalCardWindow(): JSX.Element {
       }
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        setSuccessMessage(false);
+        dispatch(visibleModalForCard());
+        navigate(`/board/${boardId}`);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <>

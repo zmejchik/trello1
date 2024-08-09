@@ -214,11 +214,12 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
           <div className={s.list_body}>
             {cards
               .filter(({ id: cardId }) => !(cardId === -1 && !isDragging))
-              .map(({ id: cardId, title: titleCard }: ICard) => (
+              .map(({ id: cardId, title: titleCard }: ICard, index) => (
                 <Card
                   key={cardId}
                   id={cardId}
                   title={titleCard}
+                  position={index + 1}
                   list_id={id}
                   list_title={titleList}
                   cards={cards}

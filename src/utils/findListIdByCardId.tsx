@@ -1,21 +1,4 @@
-interface Card {
-  id: number;
-  title: string;
-  description: string;
-  position: number;
-  users: [];
-  custom: {
-    deadline: number;
-  };
-  created_at: number;
-}
-
-interface List {
-  id: number;
-  title: string;
-  position: number;
-  cards: Card[];
-}
+import { IList } from '../common/interfaces/IList';
 
 interface Board {
   title: string;
@@ -26,7 +9,7 @@ interface Board {
     id: number;
     username: string;
   }[];
-  lists: List[];
+  lists: IList[];
 }
 
 export function findListIdByCardId(data: Board, cardId: number): number | null {

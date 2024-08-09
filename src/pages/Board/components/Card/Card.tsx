@@ -50,7 +50,11 @@ export function Card({
           dispatch(visibleModalForCard());
           dispatch(fetchDataSuccess(cards));
           dispatch(setCardId(cardId.toString()));
-          dispatch(setListId(list_id.toString()));
+          if (list_id) {
+            dispatch(setListId(list_id.toString()));
+          } else {
+            dispatch(setListId('-1'));
+          }
           dispatch(setListTitle(list_title));
           navigate(`/board/${boardId}/card/${cardId}`);
         }}
