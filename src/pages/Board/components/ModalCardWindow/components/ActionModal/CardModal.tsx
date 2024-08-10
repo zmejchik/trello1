@@ -149,7 +149,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
   return (
     <ClickAwayListener onClickAway={handleClickOutside}>
       <div className={s.modal}>
-        <div className={s.modalContent} ref={modalRef} role="presentation">
+        <div className={s.modalContent} ref={modalRef}>
           <h2>Деталі дій {type}</h2>
           <FormControl sx={{ mb: 2, minWidth: 250 }} size="small">
             <TextField id="card_name" label="Назва картки" defaultValue={cardTitle} margin="normal" fullWidth />
@@ -166,6 +166,9 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
               onChange={handleChangeBoardTitle}
               fullWidth
               margin="dense"
+              MenuProps={{
+                disablePortal: true,
+              }}
             >
               {listAllTitlesBoards.map((board) => (
                 <MenuItem key={board.id} value={board.title}>
@@ -185,6 +188,10 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
               label="Список"
               onChange={handleChangeListTitle}
               fullWidth
+              margin="dense"
+              MenuProps={{
+                disablePortal: true,
+              }}
             >
               {listAllTitlesLists.map((list) => (
                 <MenuItem key={list.id} value={list.title}>
