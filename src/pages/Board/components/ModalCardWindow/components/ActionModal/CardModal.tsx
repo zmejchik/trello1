@@ -163,10 +163,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
 
   return (
     <ClickAwayListener
-      onClickAway={(event): void => {
-        if (modalRef.current && modalRef.current.contains(event.target as Node)) {
-          return;
-        }
+      onClickAway={(): void => {
         handleClickOutside();
       }}
       disableReactTree
