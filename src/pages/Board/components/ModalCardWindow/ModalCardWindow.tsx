@@ -21,6 +21,7 @@ import api from '../../../../api/request';
 import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
 import CardModal from './components/ActionModal/CardModal';
 import { deleteCard } from '../../../../utils/deleteCard';
+import { isValidBoardName as isValidCardName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
 import { ICard } from '../../../../common/interfaces/ICard';
 import { IList } from '../../../../common/interfaces/IList';
 
@@ -114,9 +115,15 @@ function ModalCardWindow(): JSX.Element {
   };
 
   const handleTitleChange = (): void => {
-    if (cardId !== undefined) {
+    if (cardId !== undefined && isValidCardName(localCardTitle)) {
       dispatch(setCardTitle({ title: localCardTitle }));
       setIsEditCardTitle(false);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ой...',
+        text: 'Некоректне ім`я картки',
+      });
     }
   };
 
