@@ -1,6 +1,13 @@
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
-import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import {
+  ClickAwayListener,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from '@mui/material';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import api from '../../../../../../api/request';
@@ -22,6 +29,7 @@ interface AllBoards {
   title: string;
   custom: Record<string, number>;
 }
+
 interface AllLists {
   id: string;
   title: string;
@@ -41,6 +49,13 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
   const handleClickOutside = (): void => {
     onClose();
   };
+
+  /* useEffect(() => {
+    document.addEventListener('mouseup', handleClickOutside);
+    return () => {
+      document.removeEventListener('mouseup', handleClickOutside);
+    };
+  }, [handleClickOutside]); */
 
   const handleChangeBoardTitle = (event: SelectChangeEvent<string>): void => {
     const boardTitleSelected = event.target.value;
@@ -147,9 +162,17 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
   };
 
   return (
-    <ClickAwayListener onClickAway={handleClickOutside}>
-      <div className={s.modal}>
-        <div className={s.modalContent} ref={modalRef}>
+    <ClickAwayListener
+      onClickAway={(event): void => {
+        if (modalRef.current && modalRef.current.contains(event.target as Node)) {
+          return;
+        }
+        handleClickOutside();
+      }}
+      disableReactTree
+    >
+      <div className={s.modal} ref={modalRef}>
+        <div className={s.modalContent}>
           <h2>Деталі дій {type}</h2>
           <FormControl sx={{ mb: 2, minWidth: 250 }} size="small">
             <TextField id="card_name" label="Назва картки" defaultValue={cardTitle} margin="normal" fullWidth />
@@ -168,6 +191,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
               margin="dense"
               MenuProps={{
                 disablePortal: true,
+                onClick: (e) => e.stopPropagation(),
               }}
             >
               {listAllTitlesBoards.map((board) => (
@@ -191,6 +215,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
               margin="dense"
               MenuProps={{
                 disablePortal: true,
+                onClick: (e) => e.stopPropagation(),
               }}
             >
               {listAllTitlesLists.map((list) => (
