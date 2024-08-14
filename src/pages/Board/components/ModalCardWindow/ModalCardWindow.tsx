@@ -1,29 +1,29 @@
+import { Box, Input, Modal, Typography } from '@mui/material';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Input, Modal, Box, Typography } from '@mui/material';
 import Swal from 'sweetalert2';
+import api from '../../../../api/request';
+import { isValidBoardName as isValidCardName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
+import { ICard } from '../../../../common/interfaces/ICard';
+import { IList } from '../../../../common/interfaces/IList';
 import {
   fetchDataFailure,
   fetchDataStart,
   fetchDataSuccess,
+  setBoardId,
   setCardId,
+  setCardTitle,
+  setDescription,
   setListId,
   setListTitle,
-  setBoardId,
   visibleModalForCard,
-  setDescription,
-  setCardTitle,
 } from '../../../../redux/dataSlice';
-import s from './ModalCardWindow.module.scss';
 import { RootState } from '../../../../redux/store';
-import api from '../../../../api/request';
-import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
-import CardModal from './components/ActionModal/CardModal';
 import { deleteCard } from '../../../../utils/deleteCard';
-import { isValidBoardName as isValidCardName } from '../../../../common/components/CreateBoardLogic/CreateBoard';
-import { ICard } from '../../../../common/interfaces/ICard';
-import { IList } from '../../../../common/interfaces/IList';
+import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
+import s from './ModalCardWindow.module.scss';
+import CardModal from './components/ActionModal/CardModal';
 
 interface Board {
   title: string;

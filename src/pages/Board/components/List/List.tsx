@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { FaSquarePlus } from 'react-icons/fa6';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { FaClipboard } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import s from './list.module.scss';
@@ -13,6 +14,7 @@ import { updateCardList } from '../../../../utils/updateCardList';
 import { createCard } from '../../../../utils/createCard';
 import { editNameList } from '../../../../utils/editNameList';
 import api from '../../../../api/request';
+import { deleteList } from '../../../../utils/deleteList';
 
 function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList): JSX.Element {
   const [newCardName, setNewCardName] = useState('');
@@ -175,7 +177,6 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
       setCards(newCards);
     }, 0);
   }
-
   return (
     <>
       {cards.length > 0 && (
@@ -231,9 +232,18 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
                   classSlot={cardId === -1 && cards.length > 1 ? 'slotCard' : ''}
                 />
               ))}
+            <Button icon={<FaSquarePlus />} caption=" Створити картку" onClick={(): void => setModal(true)} />
+            <Button
+              icon={<RiDeleteBin6Line />}
+              caption="Видалити список"
+              onClick={async (): Promise<void> => {
+                if (boardId) {
+                  await deleteList(boardId, id.toString());
+                  window.location.reload();
+                }
+              }}
+            />
           </div>
-
-          <Button icon={<FaSquarePlus />} caption="Створити картку" onClick={(): void => setModal(true)} />
         </div>
       )}
 
@@ -250,11 +260,6 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
                 ? createCard(boardId, id, newCardName, cards, setCards, setNewCardName, onClose)
                 : Promise.resolve()
             }
-            onKeyDown={(ev): void => {
-              if (ev.key === 'Enter' && boardId) {
-                createCard(boardId, id, newCardName, cards, setCards, setNewCardName, onClose);
-              }
-            }}
           >
             Створити
           </button>

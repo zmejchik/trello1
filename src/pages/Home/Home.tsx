@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { FaSquarePlus } from 'react-icons/fa6';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
 import { CreateBoard } from '../../common/components/CreateBoardLogic/CreateBoard';
@@ -9,6 +10,7 @@ import s from './Home.module.scss';
 import { BoardPreview } from './components/Board/BoardPrewiew';
 import { fetchBoards } from '../../utils/fetchBoards';
 import { toggleModal } from '../../utils/modalHandlers';
+import { deleteBoard } from '../../utils/deleteBoard';
 
 export const BackgroundContext = createContext('#00000050');
 export function Home(): JSX.Element {
@@ -37,9 +39,23 @@ export function Home(): JSX.Element {
       </header>
       <div className={s.home_body}>
         {boards.map(({ id, title, custom }) => (
-          <Link to={`/board/${id}`} key={id}>
-            <BoardPreview key={id} title={title} style={custom} />
-          </Link>
+          <div className={s.board_wrapper} key={id}>
+            <Link to={`/board/${id}`} key={id}>
+              <BoardPreview key={id} title={title} style={custom} />
+            </Link>
+            <div>
+              <RiDeleteBin6Line
+                className={s.iconDelete}
+                onClick={async (event): Promise<void> => {
+                  event.stopPropagation();
+                  if (id) {
+                    await deleteBoard(id.toString());
+                    window.location.reload();
+                  }
+                }}
+              />
+            </div>
+          </div>
         ))}
         <Button
           icon={<FaSquarePlus />}
