@@ -109,7 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #007BFF;
+  background-color: #007bff31;
   color: #fff;
   font-size: 40px;
   font-weight: bold;
@@ -121,13 +121,13 @@
   width: 100%;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #0057b367;
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
 
   &:active {
-    background-color: #003d80;
+    background-color: #003e8091;
     transform: translateY(1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
