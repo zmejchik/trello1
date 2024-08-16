@@ -37,15 +37,16 @@ interface AllLists {
 }
 
 function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: ModalCardProps): ReactElement {
-  const [listAllTitlesBoards, setListAllTitlesBoards] = useState<{ id: string; title: string }[]>([]);
-  const [listAllTitlesLists, setListAllTitlesLists] = useState<{ id: string; title: string }[]>([]);
+  const [listAllTitlesBoards, setListAllTitlesBoards] = useState<{ id: string; title: string }[]>([]); // State to hold the list of all board titles
+  const [listAllTitlesLists, setListAllTitlesLists] = useState<{ id: string; title: string }[]>([]); // State to hold the list of all list titles for the selected board
   const [selectedBoardTitle, setSelectedBoardTitle] = useState('');
   const [selectedBoardId, setSelectedBoardId] = useState(boardId);
   const [selectedListTitle, setSelectedListTitle] = useState('');
   const [selectedListId, setSelectedListId] = useState(listId);
 
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null); // Ref for the modal container
 
+  // Function to handle clicks outside of the modal
   const handleClickOutside = (): void => {
     onClose();
   };
@@ -57,6 +58,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
     };
   }, [handleClickOutside]); */
 
+  // Handle board selection change
   const handleChangeBoardTitle = (event: SelectChangeEvent<string>): void => {
     const boardTitleSelected = event.target.value;
     const boardIdSelected = listAllTitlesBoards.find((board) => board.title === boardTitleSelected)?.id || '';
@@ -64,6 +66,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
     setSelectedBoardId(boardIdSelected);
   };
 
+  // Effect to fetch boards on component mount
   useEffect(() => {
     const fetchBoards = async (): Promise<void> => {
       try {
@@ -93,6 +96,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
     fetchBoards();
   }, []);
 
+  // Effect to fetch lists when the selected board changes
   useEffect(() => {
     const fetchLists = async (): Promise<void> => {
       try {
@@ -122,6 +126,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
     fetchLists();
   }, [selectedBoardId]);
 
+  // Handle list selection change
   const handleChangeListTitle = (event: SelectChangeEvent<string>): void => {
     const listTitleSelected = event.target.value;
     const listIdSelected = listAllTitlesLists.find((list) => list.title === listTitleSelected)?.id || '';
@@ -131,6 +136,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
 
   const dispatch = useDispatch();
 
+  // Send data to the server based on the action type
   const sendDataToServer = async (): Promise<void> => {
     const updatedCardData = {
       ...cardData,
@@ -156,6 +162,7 @@ function CardModal({ type, boardId, listId, cardTitle, cardData, onClose }: Moda
         footer: error instanceof Error ? error.message : String(error),
       });
     } finally {
+      // Hide the modal and call the onClose function
       dispatch(visibleModalForCard());
       onClose();
     }

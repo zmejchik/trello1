@@ -43,12 +43,14 @@ const dataSlice = createSlice({
   name: 'data',
   initialState,
   reducers: {
+    // Toggle the visibility of the modal
     visibleModalForCard(state) {
       return {
         ...state,
         modal: { isOpen: !state.modal.isOpen },
       };
     },
+    // Set the loading state to true and clear any existing errors
     fetchDataStart(state) {
       return {
         ...state,
@@ -56,6 +58,7 @@ const dataSlice = createSlice({
         error: null,
       };
     },
+    // Handle successful data fetch and update the state with the fetched cards
     fetchDataSuccess(state, action: PayloadAction<ICard[]>) {
       const cards = action.payload.map((card) => ({
         ...card,
@@ -72,17 +75,12 @@ const dataSlice = createSlice({
         cards,
       };
     },
+    // Handle data fetch failure and update the error state
     fetchDataFailure(state, action: PayloadAction<string>) {
       return {
         ...state,
         loading: false,
         error: action.payload,
-      };
-    },
-    toggleModal(state) {
-      return {
-        ...state,
-        modal: { isOpen: !state.modal.isOpen },
       };
     },
     setListId(state, action: PayloadAction<string>) {
@@ -132,7 +130,6 @@ export const {
   fetchDataStart,
   fetchDataSuccess,
   fetchDataFailure,
-  toggleModal,
   setListId,
   setListTitle,
   setCardId,

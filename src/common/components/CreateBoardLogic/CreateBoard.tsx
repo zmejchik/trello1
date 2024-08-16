@@ -20,11 +20,11 @@ export function CreateBoard({
 }): JSX.Element {
   const [newBoardName, setNewBoardName] = useState('');
 
-  const generateRandomColor = (): string => {
+  const generateRandomColor = (alpha: number): string => {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
     const b = Math.floor(Math.random() * 256);
-    return `rgb(${r}, ${g}, ${b})`;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
   const createBoard = async (): Promise<void> => {
@@ -32,7 +32,7 @@ export function CreateBoard({
       try {
         await api.post('/board', {
           title: newBoardName,
-          custom: { background: generateRandomColor() },
+          custom: { background: generateRandomColor(0.8) },
         });
         onClose();
         const { boards }: { boards: IBoard[] } = await api.get('/board');

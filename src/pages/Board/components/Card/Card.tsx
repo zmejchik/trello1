@@ -27,11 +27,13 @@ export function Card({
   onDragEnter,
   cards,
 }: CardProps): JSX.Element {
-  const [isEditingNameCard] = useState(false);
-  const [cardName] = useState(cardTitle);
-  const { boardId } = useParams<{ boardId: string }>();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isEditingNameCard] = useState(false); // State to track if the card name is being edited
+  const [cardName] = useState(cardTitle); // State to store the card name
+  const { boardId } = useParams<{ boardId: string }>(); // Extract the board ID from the route parameters
+  const inputRef = useRef<HTMLInputElement>(null); // Reference to the input element for focusing
   const navigate = useNavigate();
+
+  // Focus the input when editing the card name
   useEffect(() => {
     if (isEditingNameCard) {
       inputRef.current?.focus();
