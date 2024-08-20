@@ -1,12 +1,12 @@
 .board {
-  width: 95vw;
-  height: 95vh;
-  overflow-y: auto;
-  overflow-x: auto;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/images/background.jpg');
 }
 .board_header {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
   align-items: flex-start;
   text-shadow:
     -1px -1px #fff,
@@ -36,6 +36,8 @@
   display: flex;
   justify-content: space-evenly;
   overflow-x: auto;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .board_button {
   width: fit-content;

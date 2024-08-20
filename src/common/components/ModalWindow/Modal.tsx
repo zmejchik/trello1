@@ -6,6 +6,7 @@ export function Modal({
   visible = false,
   title = '',
   inputValue,
+  placeholder = '',
   setValue,
   footer = '',
   onClose,
@@ -23,7 +24,11 @@ export function Modal({
         </div>
         <div className={s.modal_body}>
           <div className={s.modal_content}>
-            <input value={inputValue} onChange={(event): void => setValue(event.target.value)} />
+            <input
+              value={inputValue}
+              placeholder={placeholder}
+              onChange={(event): void => setValue(event.target.value)}
+            />
           </div>
         </div>
         {footer && <div className={s.modal_footer}>{footer}</div>}

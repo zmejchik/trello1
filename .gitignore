@@ -5,12 +5,14 @@
 /.pnp
 .pnp.js
 /.husky
+/.vscode
 
 # testing
 /coverage
 
 # production
 /build
+/public
 
 # misc
 .DS_Store
