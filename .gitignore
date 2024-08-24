@@ -6,6 +6,7 @@
 .pnp.js
 /.husky
 /.vscode
+.env.example
 
 # testing
 /coverage
