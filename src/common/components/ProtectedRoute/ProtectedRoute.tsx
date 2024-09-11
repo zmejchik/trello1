@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import Cookies from 'js-cookie';
 import isTokenExpiried from '../../../utils/tokenExpiried';
 import api from '../../../api/request';
 
@@ -11,7 +12,8 @@ interface ProtectedRouteProps {
 function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const refreshToken = localStorage.getItem('refreshToken');
+  // const refreshToken = localStorage.getItem('refreshToken');
+  const refreshToken = Cookies.get('refreshToken');
 
   useEffect(() => {
     const checkAuth = async (): Promise<void> => {
@@ -22,7 +24,8 @@ function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
               refreshToken,
             });
             localStorage.setItem('token', response.token);
-            localStorage.setItem('refreshToken', response.refreshToken);
+            // localStorage.setItem('refreshToken', response.refreshToken);
+            Cookies.set('refreshToken', response.refreshToken, { secure: true });
             window.location.reload();
           } catch (error) {
             Swal.fire({
@@ -32,7 +35,8 @@ function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
               footer: error instanceof Error ? error.message : String(error),
             });
             localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
+            // localStorage.removeItem('refreshToken');
+            Cookies.remove('refreshToken');
             navigate('/login');
           }
         } else {
