@@ -28,7 +28,7 @@ function LoginForm(): JSX.Element {
       Swal.fire({
         icon: 'error',
         title: 'Ой...',
-        text: 'Помилка входу',
+        text: 'Помилка входу, можливо невірні логін, пароль',
         footer: error instanceof Error ? error.message : String(error),
       });
     }
