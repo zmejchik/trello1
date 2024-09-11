@@ -52,7 +52,6 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
     setIsDragging(false);
     const newCards = cards.filter((card) => card.id !== -1);
     setTimeout(() => {
-      // Reassign positions to the cards after one is dragged out
       newCards.forEach((card, index) => {
         const newCard = { ...card, position: index + 1 };
         Object.assign(card, newCard);
@@ -66,30 +65,24 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
     let draggedCard: ICard | undefined;
     if (boardId && draggingCardId) {
       try {
-        // Fetch the current board data
         const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
         // Find the card being dragged from the lists
         data.lists.find((list) => {
           draggedCard = list.cards.find((card) => card.id.toString() === cardId);
           if (draggedCard) {
-            // Update the list ID of the dragged card
             draggedCard.list_id = id;
             return true;
           }
           return false;
         });
         if (draggedCard) {
-          // Remove the card from its original list
           await api.delete(`/board/${boardId}/card/${cardId}`);
-          // Recalculate positions of existing cards
           cards.forEach((card, index) => {
             const newCard = { ...card, position: index + 1 };
             Object.assign(card, newCard);
           });
-          // Determine position for the dragged card in the new list
           const slotCard: ICard[] = cards.filter((card) => card.id === -1);
           draggedCard.position = slotCard.length > 0 ? slotCard[0].position : cards.length + 1;
-          // Reassign positions again to maintain order
           cards.forEach((card, index) => {
             if (card.position === draggedCard?.position) {
               cards[index] = draggedCard as ICard;
@@ -99,11 +92,9 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
             const newCard = { ...card, position: index + 1 };
             Object.assign(card, newCard);
           });
-          // Add the card to its new list on the server
           await api.post(`/board/${boardId}/card/`, draggedCard);
 
           setIsDragging(false);
-          // Update the card list on the client side
           await updateCardList(boardId, id, setCards);
           setCards(cards);
         }
@@ -118,7 +109,6 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
     }
     setRenderList(true);
 
-    // Refresh the card IDs from the server data to keep them in sync
     const dataFromServer: { lists: IList[] } = await api.get(`/board/${boardId}`);
     const listFromServer = dataFromServer.lists.find((list) => list.id === id);
     const cardFromServer = listFromServer?.cards.find((card) => card.title === draggedCard?.title);
@@ -131,16 +121,15 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
 
       return { id: updatedCard.id, position: updatedCard.position, list_id: id };
     });
-    // Update the card data on the server with the correct positions and IDs
     await api.put(`/board/${boardId}/card`, updateDataOnServer);
 
     setCards(cards);
   };
 
   const dragEnterHandler = (event: React.DragEvent<HTMLElement>, cardId: number): void => {
-    const element = event.currentTarget as HTMLElement;
-    const mousePos = event.clientY - element.getBoundingClientRect().top;
-    const isBelowHalf = mousePos > element.offsetHeight / 2;
+    // const element = event.currentTarget as HTMLElement;
+    // const mousePos = event.clientY - element.getBoundingClientRect().top;
+    // const isBelowHalf = mousePos > element.offsetHeight / 2;
     const newCards = [...cards];
     const cardIndex = newCards.findIndex((card) => card.id === cardId);
     const existingSlotIndex = newCards.findIndex((card) => card.id === -1);
@@ -151,11 +140,12 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
       const slotCard = { id: -1, title: '', list_id: id, position: newCards[cardIndex].position };
       if (newCards.length > 0) {
         // Insert the slot card before or after the hovered card, depending on the mouse position
-        if (isBelowHalf) {
+        newCards.splice(cardIndex + 1, 0, slotCard);
+        /* if (isBelowHalf) {
           newCards.splice(cardIndex + 1, 0, slotCard);
         } else {
           newCards.splice(cardIndex, 0, slotCard);
-        }
+        } */
       }
       // Reassign positions to keep the list in order
       newCards.forEach((card, index) => {
