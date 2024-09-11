@@ -11,6 +11,7 @@ import { BoardPreview } from './components/Board/BoardPrewiew';
 import { fetchBoards } from '../../utils/fetchBoards';
 import { toggleModal } from '../../utils/modalHandlers';
 import { deleteBoard } from '../../utils/deleteBoard';
+import { useLogOut } from '../../utils/logOut';
 
 export const BackgroundContext = createContext('#00000050');
 export function Home(): JSX.Element {
@@ -18,6 +19,7 @@ export function Home(): JSX.Element {
   const [boards, setBoards] = useState<IBoard[]>([]);
   const [isModal, setModal] = useState(false);
   const [progresBar, setProgresBar] = useState(0);
+  const { logOut } = useLogOut();
 
   const onClose = (): void => toggleModal(isModal, setModal);
 
@@ -65,6 +67,9 @@ export function Home(): JSX.Element {
         />
       </div>
       <CreateBoard isModal={isModal} onClose={onClose} setBoards={setBoards} />
+      <button type="button" className={s.buttonLogOut} onClick={logOut}>
+        LogOut
+      </button>
     </div>
   );
 }

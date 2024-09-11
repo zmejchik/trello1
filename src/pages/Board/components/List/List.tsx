@@ -18,19 +18,18 @@ import { deleteList } from '../../../../utils/deleteList';
 
 function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList): JSX.Element {
   const [newCardName, setNewCardName] = useState('');
-  const [isModal, setModal] = useState(false); // State to toggle the modal visibility
-  const [cards, setCards] = useState(cardsArray); // State to store the list of cards
-  const [listName, setListName] = useState(titleList); // State to store and manage the list name
-  const [isEditingNameList, setIsEditingNameList] = useState(false); // State to toggle editing mode for the list name
-  const [inputValueNameList, setInputValueNameList] = useState(listName); // State to manage the input value during list name editing
-  const [isDragging, setIsDragging] = useState(false); // State to indicate if a card is being dragged
-  const draggingCardId = useRef<number>(-1); // Ref to store the ID of the currently dragged card
+  const [isModal, setModal] = useState(false);
+  const [cards, setCards] = useState(cardsArray);
+  const [listName, setListName] = useState(titleList);
+  const [isEditingNameList, setIsEditingNameList] = useState(false);
+  const [inputValueNameList, setInputValueNameList] = useState(listName);
+  const [isDragging, setIsDragging] = useState(false);
+  const draggingCardId = useRef<number>(-1);
 
-  const onClose = (): void => setModal(false); // Function to close the modal
+  const onClose = (): void => setModal(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { boardId = '' } = useParams<{ boardId?: string }>(); // Extract boardId from the route parameters
+  const { boardId = '' } = useParams<{ boardId?: string }>();
 
-  // Focus the input field when entering edit mode for the list name
   useEffect(() => {
     if (isEditingNameList) {
       inputRef.current?.focus();
@@ -44,14 +43,12 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
     }
   }, [cards.length, id]);
 
-  // Handler to manage when a dragged card is over the list component
-  function dragOverHandler(event: React.DragEvent<HTMLDivElement>): void {
+  const dragOverHandler = (event: React.DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
     setIsDragging(true);
-  }
+  };
 
-  // Handler to manage when a dragged card leaves the list component
-  function dragLeaveHandler(): void {
+  const dragLeaveHandler = (): void => {
     setIsDragging(false);
     const newCards = cards.filter((card) => card.id !== -1);
     setTimeout(() => {
@@ -62,8 +59,7 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
       });
       setCards(newCards);
     }, 0);
-  }
-  // Handler to manage when a card is dropped into the list
+  };
   const dropHandler = async (event: React.DragEvent<HTMLElement>): Promise<void> => {
     event.preventDefault();
     const cardId = event.dataTransfer.getData('text/plain');
@@ -141,8 +137,7 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
     setCards(cards);
   };
 
-  // Handler to manage when a dragged card enters the list or another card
-  function dragEnterHandler(event: React.DragEvent<HTMLElement>, cardId: number): void {
+  const dragEnterHandler = (event: React.DragEvent<HTMLElement>, cardId: number): void => {
     const element = event.currentTarget as HTMLElement;
     const mousePos = event.clientY - element.getBoundingClientRect().top;
     const isBelowHalf = mousePos > element.offsetHeight / 2;
@@ -172,10 +167,9 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
         setCards(newCards);
       }, 100);
     }
-  }
+  };
 
-  // Handler to manage when a drag operation starts on a card
-  function dragStartHandler(event: React.DragEvent<HTMLElement>, cardId: number): void {
+  const dragStartHandler = (event: React.DragEvent<HTMLElement>, cardId: number): void => {
     event.dataTransfer.setData('text/plain', cardId.toString());
     draggingCardId.current = cardId;
     // Temporarily replace the dragged card with a slot
@@ -195,7 +189,7 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
       });
       setCards(newCards);
     }, 0);
-  }
+  };
   return (
     <>
       {cards.length > 0 && (

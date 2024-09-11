@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import zxcvbn from 'zxcvbn';
 import RegisterFormStyles from './Registerstyle';
+import api from '../../api/request';
 
 function Register(): JSX.Element {
   const [email, setEmail] = useState('');
@@ -9,72 +12,109 @@ function Register(): JSX.Element {
   const [repeatedPassword, setRepeatedPassword] = useState('');
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [messagePaswordsMatch, setMessagePaswordsMatch] = useState('');
+  const [messageCorectEmail, setMessageCorectEmail] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isCorectEmail, setIsCorectEmail] = useState(false);
+  const [isCorectPaswords, setIsCorectPaswords] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isCorectEmail && isCorectPaswords && password.length >= 8) {
+      setIsButtonDisabled(false);
+    } else {
+      setIsButtonDisabled(true);
+    }
+  }, [isCorectEmail, isCorectPaswords]);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     // в залежності від складності паролю змінюємо passwordStrength від 0 до 3
     // 0 слабий 3 максимальний треба ще кольори додати змінювані зараз заглушка
     const pwd = e.target.value;
     setPassword(pwd);
-    // перевірка паролю на складність
-    switch (pwd.length) {
+    if (pwd.length < 8) {
+      setIsButtonDisabled(true);
+      setPasswordStrength(0);
+      return;
+    }
+    const { score } = zxcvbn(password);
+    setPasswordStrength(score);
+  };
+
+  const getPasswordStrengthText = (levelPassword: number): string => {
+    switch (levelPassword) {
       case 0:
-        setPasswordStrength(0);
-        setIsButtonDisabled(true);
-        break;
+        return 'Слабкий пароль';
       case 1:
-        setPasswordStrength(1);
-        setIsButtonDisabled(false);
-        break;
+        return 'Середній пароль';
       case 2:
-        setPasswordStrength(2);
-        setIsButtonDisabled(false);
-        break;
+        return 'Сильний пароль';
       case 3:
-        setPasswordStrength(3);
-        setIsButtonDisabled(false);
-        break;
-      case 4:
-        setPasswordStrength(4);
-        setIsButtonDisabled(false);
-        break;
+        return 'Надійний пароль';
       default:
-        setPasswordStrength(5);
-        setIsButtonDisabled(false);
-        break;
+        return '';
     }
   };
+
   const handleRepeatedPasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    // в залежності від складності паролю змінюємо passwordStrength від 0 до 3
-    // 0 слабий 3 максимальний треба ще кольори додати змінювані зараз заглушка
     const repeatedpwd = e.target.value;
     setRepeatedPassword(repeatedpwd);
     if (repeatedpwd !== password) {
+      setIsCorectPaswords(false);
       setMessagePaswordsMatch('Паролі не збігаються');
     } else {
+      setIsCorectPaswords(true);
       setMessagePaswordsMatch('');
     }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    // валідація пошти
     const eml = e.target.value;
     setEmail(eml);
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (emailRegex.test(eml)) {
-      setIsButtonDisabled(false);
-    } else {
+
+    if (!emailRegex.test(eml)) {
+      setMessageCorectEmail('Неправильний email');
       setIsButtonDisabled(true);
+      setIsCorectEmail(false);
+    } else {
+      setMessageCorectEmail('');
+      setIsCorectEmail(true);
     }
   };
-  const handleSubmit = (e: React.FormEvent): void => {
+  const registrationUser = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    // Add form registration on the server side
+    if (password === repeatedPassword && isCorectEmail && isCorectPaswords) {
+      try {
+        await api.post('/user', {
+          email,
+          password,
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Повідомлення',
+          text: 'Користувача створено успішно, можете авторизуватись',
+        });
+        navigate('/login');
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Ой...',
+          text: 'Помилка створення користувача',
+          footer: error instanceof Error ? error.message : String(error),
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ой...',
+        text: 'Дані для реєстрації не коректні',
+      });
+    }
   };
 
   return (
     <Box sx={RegisterFormStyles.container}>
-      <Box component="form" onSubmit={handleSubmit} sx={RegisterFormStyles.formContainer}>
+      <Box component="form" onSubmit={registrationUser} sx={RegisterFormStyles.formContainer}>
         <Typography variant="h4" gutterBottom>
           Реєстрація
         </Typography>
@@ -84,7 +124,9 @@ function Register(): JSX.Element {
           fullWidth
           margin="normal"
           value={email}
+          type="email"
           onChange={handleEmailChange}
+          helperText={messageCorectEmail}
           sx={RegisterFormStyles.textField}
         />
         <TextField
@@ -95,14 +137,18 @@ function Register(): JSX.Element {
           margin="normal"
           value={password}
           onChange={handlePasswordChange}
-          helperText="В паролі має бути не менше 6 символів"
+          helperText={password.length < 8 ? 'В паролі має бути не менше 8 символів' : ''}
           sx={RegisterFormStyles.textField}
         />
         <Box sx={RegisterFormStyles.passwordStrengthBar}>
-          <Box className={passwordStrength > 1 ? 'active' : ''} />
-          <Box className={passwordStrength > 2 ? 'active' : ''} />
-          <Box className={passwordStrength > 3 ? 'active' : ''} />
-          <Box className={passwordStrength > 4 ? 'active' : ''} />
+          <Box sx={RegisterFormStyles.passwordStrengthBar}>
+            <Box className={passwordStrength > 0 ? 'active weak' : ''} />
+            <Box className={passwordStrength > 1 ? 'active fair' : ''} />
+            <Box className={passwordStrength > 2 ? 'active good' : ''} />
+            <Box className={passwordStrength > 3 ? 'active strong' : ''}>
+              <p>{getPasswordStrengthText(passwordStrength)}</p>
+            </Box>
+          </Box>
         </Box>
         <TextField
           label="Повторіть пароль"

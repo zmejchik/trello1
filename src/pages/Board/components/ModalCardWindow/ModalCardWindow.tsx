@@ -38,30 +38,29 @@ interface Board {
 }
 
 function ModalCardWindow(): JSX.Element {
-  const { boardId, cardId } = useParams<{ boardId: string; cardId: string }>(); // Extract the board ID and card ID from the URL parameters
-  const [isVisibleModalWindow, setVisibleModalWindow] = useState(false); // State to control the visibility of the card action modal
-  const [dataBoard, setDataBoard] = useState<Board | null>(null); // State to store the board data
-  const [typeCardModal, setTypeCardModal] = useState('copy'); // State to control the type of card action modal (copy, move, delete)
-  const [isEditCardTitle, setIsEditCardTitle] = useState(false); // State to control whether the card title is in edit mode
-  const [localCardTitle, setLocalCardTitle] = useState<string>(''); // State to store the local card title for editing
-  const [successMessage, setSuccessMessage] = useState<boolean>(false); // State to control the visibility of the success message modal
+  const { boardId, cardId } = useParams<{ boardId: string; cardId: string }>();
+  const [isVisibleModalWindow, setVisibleModalWindow] = useState(false);
+  const [dataBoard, setDataBoard] = useState<Board | null>(null);
+  const [typeCardModal, setTypeCardModal] = useState('copy');
+  const [isEditCardTitle, setIsEditCardTitle] = useState(false);
+  const [localCardTitle, setLocalCardTitle] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleClose = (): void => setSuccessMessage(false); // Function to close the success message modal
+  const handleClose = (): void => setSuccessMessage(false);
 
   useEffect(() => {
     if (boardId && cardId) {
-      dispatch(setCardId(cardId)); // Set the card ID in the Redux store
-      dispatch(fetchDataStart()); // Dispatch action to indicate the start of data fetching
+      dispatch(setCardId(cardId));
+      dispatch(fetchDataStart());
       api
         .get(`/board/${boardId}`)
         .then((response) => {
           const data: Board = response.data || response;
-          setDataBoard(data); // Store the board data in the state
-          // find the listId by the cardId
+          setDataBoard(data);
           const listId = findListIdByCardId(data, +cardId);
-          dispatch(setListId(listId ? listId.toString() : '')); // Set the list ID in the Redux store
+          dispatch(setListId(listId ? listId.toString() : ''));
           const list: IList | undefined = data.lists.find((listItem) => listItem.id === listId);
           if (list) {
             // find cards array
@@ -79,7 +78,6 @@ function ModalCardWindow(): JSX.Element {
     }
   }, [boardId, cardId, dispatch]);
 
-  // Select the card data from the Redux store based on the card ID
   const data = useSelector((state: RootState) =>
     state.data.cards.find((card) => card.id.toString() === state.data.cardId)
   );
@@ -87,15 +85,13 @@ function ModalCardWindow(): JSX.Element {
   const listName = useSelector((state: RootState) => state.data.list_name);
   const listId: string = useSelector((state: RootState) => state.data.listId);
 
-  // Effect to initialize the local card title when the data is fetched
   useEffect(() => {
     if (data) {
-      setLocalCardTitle(data.title); // Initialize localCardTitle with the card title from the store
+      setLocalCardTitle(data.title);
     }
   }, [data]);
 
-  // Function to handle opening of different types of card modals (copy, move, delete)
-  function handleCardModalWindow(type: string): void {
+  const handleCardModalWindow = (type: string): void => {
     setTypeCardModal(type);
     if (type === 'delete' && cardId !== undefined && boardId !== undefined) {
       deleteCard(+cardId, boardId).then(() => {
@@ -106,21 +102,17 @@ function ModalCardWindow(): JSX.Element {
     } else {
       setVisibleModalWindow(true); // Open the card action modal
     }
-  }
-
-  // Function to handle changes in the card description
-  function handleDescription(event: ChangeEvent<HTMLTextAreaElement>): void {
+  };
+  const handleDescription = (event: ChangeEvent<HTMLTextAreaElement>): void => {
     if (cardId !== undefined) {
-      dispatch(setDescription({ cardId: +cardId, description: event.target.value })); // Update the card description in the Redux store
+      dispatch(setDescription({ cardId: +cardId, description: event.target.value }));
     }
-  }
+  };
 
-  // Function to handle changes in the card title input field
   const handleTitleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setLocalCardTitle(event.target.value); // Update the localCardTitle state
   };
 
-  // Function to handle saving the new card title
   const handleTitleChange = (): void => {
     if (cardId !== undefined && isValidCardName(localCardTitle)) {
       dispatch(setCardTitle({ title: localCardTitle }));
@@ -134,12 +126,10 @@ function ModalCardWindow(): JSX.Element {
     }
   };
 
-  // Function to enable edit mode for the card title
   const handleTitleClick = (): void => {
     setIsEditCardTitle(true);
   };
 
-  // Function to send the updated card data to the server
   const sendNewDataCardOnServer = async (): Promise<void> => {
     if (data !== undefined && listId !== undefined && cardId !== undefined) {
       try {
@@ -160,7 +150,6 @@ function ModalCardWindow(): JSX.Element {
     }
   };
 
-  // Effect to handle keydown events (specifically "Escape" key to close the modal)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {

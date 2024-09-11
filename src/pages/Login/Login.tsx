@@ -1,18 +1,37 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Container, TextField, Button, Checkbox, FormControlLabel, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import api from '../../api/request';
 import loginFormStyles from './Loginstyle'; // import styles from styles
 
 function LoginForm(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    // Логіка обробки даних форми
-    // console.log('Email:', email);
-    // console.log('Password:', password);
+    try {
+      const response: { result: string; token: string; refreshToken: string } = await api.post('/login', {
+        email,
+        password,
+      });
+      // логіка після успішної авторизації
+      if (response.result === 'Authorized') {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        navigate('/');
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ой...',
+        text: 'Помилка входу',
+        footer: error instanceof Error ? error.message : String(error),
+      });
+    }
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -36,6 +55,7 @@ function LoginForm(): JSX.Element {
         <TextField
           variant="outlined"
           margin="normal"
+          type="email"
           required
           fullWidth
           id="email"

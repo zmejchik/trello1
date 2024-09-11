@@ -14,6 +14,7 @@ import { fetchBoardData } from '../../utils/fetchBoardData';
 import { editBoardName } from '../../utils/editBoardName';
 import ModalCreateNewList from '../../common/components/ModalCreateNewList/ModalCreateNewList';
 import ModalCardWindow from './components/ModalCardWindow/ModalCardWindow';
+import { useLogOut } from '../../utils/logOut';
 
 export function Board(): JSX.Element {
   const [boardTitle, setBoardTitle] = useState('');
@@ -31,6 +32,7 @@ export function Board(): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
   const onClose = (): void => setModal(!isModal);
   const isModalOpen = useSelector((state: RootState) => state.data.modal.isOpen);
+  const { logOut } = useLogOut();
 
   useEffect(() => {
     if (boardId) {
@@ -114,6 +116,9 @@ export function Board(): JSX.Element {
       />
       {isModalOpen && <ModalCardWindow />}
       <Outlet />
+      <button type="button" className={s.buttonLogOut} onClick={logOut}>
+        LogOut
+      </button>
     </div>
   );
 }

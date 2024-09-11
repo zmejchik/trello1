@@ -1,3 +1,5 @@
+import { green, orange, red, yellow } from '@mui/material/colors';
+
 const RegisterFormStyles = {
   container: {
     display: 'flex',
@@ -73,9 +75,19 @@ const RegisterFormStyles = {
       marginLeft: '4px',
       marginRight: '4px',
       backgroundColor: '#dadce0',
+      transition: 'background-color 0.3s ease',
     },
-    '& .active': {
-      backgroundColor: '#3498db',
+    '& .weak': {
+      backgroundColor: red[500],
+    },
+    '& .fair': {
+      backgroundColor: orange[500],
+    },
+    '& .good': {
+      backgroundColor: yellow[500],
+    },
+    '& .strong': {
+      backgroundColor: green[500],
     },
   },
 };

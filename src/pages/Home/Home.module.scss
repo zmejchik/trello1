@@ -1,7 +1,7 @@
 .header {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   text-shadow:
     -1px -1px #fff,
     -2px -2px #fff,
@@ -17,10 +17,39 @@
     3px -3px 2px #bbb;
   color: steelblue;
   font-size: 24px;
-  transition: color 0.3s, transform 0.3s;
+  position: relative; /* добавляем относительное позиционирование */
+  transition:
+    color 0.3s,
+    transform 0.3s;
   &:hover {
     color: yellowgreen;
     transform: scale(1.05);
+  }
+}
+
+.buttonLogOut {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  background-color: #673ab7;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: x-large;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+
+  &:hover {
+    background-color: #1b05aa;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    background-color: #4c2c99;
+    transform: translateY(1px);
   }
 }
 
@@ -38,7 +67,9 @@
   margin: 20px;
   padding: 10px;
   border-radius: 10px;
-  transition: background-color 0.3s, transform 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
   &:hover {
     background-color: #1e07621d;
     transform: translateY(-5px);
@@ -50,7 +81,9 @@
   font-size: x-large;
   cursor: pointer;
   border-radius: 5px;
-  transition: color 0.3s, transform 0.3s;
+  transition:
+    color 0.3s,
+    transform 0.3s;
   &:hover {
     color: red;
     transform: scale(1.2);
@@ -68,7 +101,9 @@
   box-shadow:
     0 16px 28px 0 rgba(0, 0, 0, 0.22),
     0 25px 55px 0 rgba(0, 0, 0, 0.21);
-  transition: box-shadow 0.3s, transform 0.3s;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
   &:hover {
     box-shadow:
       0 20px 30px 0 rgba(0, 0, 0, 0.25),
@@ -98,7 +133,9 @@
   color: steelblue;
   font-size: 18px;
   font-weight: bold;
-  transition: color 0.3s, transform 0.3s;
+  transition:
+    color 0.3s,
+    transform 0.3s;
   border-radius: 10px;
   &:hover {
     color: yellowgreen;
@@ -116,7 +153,10 @@
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   max-height: 80px;
   width: 100%;
 
