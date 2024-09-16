@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Cookies from 'js-cookie';
 import api from '../../api/request';
-import loginFormStyles from './Loginstyle'; // import styles from styles
+import loginFormStyles from './Loginstyle';
 
 function LoginForm(): JSX.Element {
   const [email, setEmail] = useState<string>('');
