@@ -23,7 +23,6 @@ function LoginForm(): JSX.Element {
       if (response.result === 'Authorized') {
         localStorage.setItem('token', response.token);
         Cookies.set('refreshToken', response.refreshToken, { secure: true });
-        // localStorage.setItem('refreshToken', response.refreshToken);
         navigate('/');
       }
     } catch (error) {

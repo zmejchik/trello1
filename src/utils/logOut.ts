@@ -6,7 +6,6 @@ export const useLogOut = (): { logOut: () => void } => {
 
   const logOut = (): void => {
     localStorage.removeItem('token');
-    // localStorage.removeItem('refreshToken');
     Cookies.remove('refreshToken');
     navigate('/login');
   };

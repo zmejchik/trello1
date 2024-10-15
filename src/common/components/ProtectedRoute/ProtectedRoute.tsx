@@ -12,7 +12,6 @@ interface ProtectedRouteProps {
 function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  // const refreshToken = localStorage.getItem('refreshToken');
   const refreshToken = Cookies.get('refreshToken');
 
   useEffect(() => {
@@ -24,7 +23,6 @@ function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
               refreshToken,
             });
             localStorage.setItem('token', response.token);
-            // localStorage.setItem('refreshToken', response.refreshToken);
             Cookies.set('refreshToken', response.refreshToken, { secure: true });
             window.location.reload();
           } catch (error) {
@@ -35,7 +33,6 @@ function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
               footer: error instanceof Error ? error.message : String(error),
             });
             localStorage.removeItem('token');
-            // localStorage.removeItem('refreshToken');
             Cookies.remove('refreshToken');
             navigate('/login');
           }

@@ -34,10 +34,10 @@ function Register(): JSX.Element {
     if (pwd.length < 8) {
       setIsButtonDisabled(true);
       setPasswordStrength(0);
-      return;
+    } else {
+      const { score } = zxcvbn(password);
+      setPasswordStrength(score);
     }
-    const { score } = zxcvbn(password);
-    setPasswordStrength(score);
   };
 
   const getPasswordStrengthText = (levelPassword: number): string => {
@@ -142,10 +142,10 @@ function Register(): JSX.Element {
         />
         <Box sx={RegisterFormStyles.passwordStrengthBar}>
           <Box sx={RegisterFormStyles.passwordStrengthBar}>
-            <Box className={passwordStrength > 0 ? 'active weak' : ''} />
-            <Box className={passwordStrength > 1 ? 'active fair' : ''} />
-            <Box className={passwordStrength > 2 ? 'active good' : ''} />
-            <Box className={passwordStrength > 3 ? 'active strong' : ''}>
+            <Box className={passwordStrength >= 0 ? 'active weak' : ''} />
+            <Box className={passwordStrength >= 1 ? 'active fair' : ''} />
+            <Box className={passwordStrength >= 2 ? 'active good' : ''} />
+            <Box className={passwordStrength >= 3 ? 'active strong' : ''}>
               <p>{getPasswordStrengthText(passwordStrength)}</p>
             </Box>
           </Box>
