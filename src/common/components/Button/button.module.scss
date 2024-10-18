@@ -1,0 +1,23 @@
+.custom_button {
+  display: flex;
+  color: #fff;
+  background-color: #673ab7;
+  text-decoration: none;
+  border-radius: 10px;
+  border-style: double;
+  font-size: x-large;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px;
+  margin-top: 20px;
+  transition:
+    width 0.3s,
+    background-color 0.3s;
+}
+
+.custom_button:hover {
+  background-color: #1b05aa;
+}

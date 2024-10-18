@@ -18,30 +18,31 @@ export function CreateBoard({
   setBoards: (arg0: IBoard[]) => void;
   isModal: boolean;
 }): JSX.Element {
-  const [value, setValue] = useState('');
+  const [newBoardName, setNewBoardName] = useState('');
 
-  const generateRandomColor = (): string => {
+  const generateRandomColor = (alpha: number): string => {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
     const b = Math.floor(Math.random() * 256);
-    return `rgb(${r}, ${g}, ${b})`;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
   const createBoard = async (): Promise<void> => {
-    if (isValidBoardName(value)) {
+    if (isValidBoardName(newBoardName)) {
       try {
         await api.post('/board', {
-          title: value,
-          custom: { background: generateRandomColor() },
+          title: newBoardName,
+          custom: { background: generateRandomColor(0.8) },
         });
         onClose();
         const { boards }: { boards: IBoard[] } = await api.get('/board');
         setBoards(boards);
+        setNewBoardName('');
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          title: 'Oops...',
-          text: 'Error creating board',
+          title: 'Ой...',
+          text: 'Помилка створення дошки',
         }).then(() => {
           onClose();
         });
@@ -49,10 +50,10 @@ export function CreateBoard({
     } else {
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Incorrect board name',
+        title: 'Ой...',
+        text: 'Некоректне ім`я дошки',
       });
-      onClose(); // Закрываем модальное окно при некорректном имени доски
+      onClose();
     }
   };
 
@@ -60,9 +61,10 @@ export function CreateBoard({
     <Modal
       visible={isModal}
       title="Введіть назву нової дошки"
-      inputValue={value}
-      setValue={setValue}
-      footer={<button onClick={createBoard}>Create</button>}
+      inputValue={newBoardName}
+      placeholder="Назва нової дошки"
+      setValue={setNewBoardName}
+      footer={<button onClick={createBoard}>Створити</button>}
       onClose={onClose}
     />
   );

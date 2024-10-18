@@ -1,12 +1,13 @@
 .board {
-  width: 95vw;
-  height: 95vh;
-  overflow-y: auto;
-  overflow-x: auto;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/images/background.jpg');
 }
 .board_header {
+  position: relative; // Ensure the button is positioned relative to this container
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
   align-items: flex-start;
   text-shadow:
     -1px -1px #fff,
@@ -24,6 +25,7 @@
   color: steelblue;
   font-size: 20px;
   transition: all 1s;
+
   &:hover {
     color: yellowgreen;
   }
@@ -32,10 +34,39 @@
 .boardH1 {
   display: flex;
 }
+
+.buttonLogOut {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  background-color: #673ab7;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: x-large;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+
+  &:hover {
+    background-color: #1b05aa;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    background-color: #4c2c99;
+    transform: translateY(1px);
+  }
+}
+
 .board_body {
   display: flex;
   justify-content: space-evenly;
   overflow-x: auto;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .board_button {
   width: fit-content;

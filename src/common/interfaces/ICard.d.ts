@@ -1,6 +1,13 @@
 export interface ICard {
   id: number;
   title: string;
-  listId?: number;
-  updateCardList: () => Promise<void>;
+  list_id?: number;
+  position: number;
+  users?: string[];
+  custom?: {
+    deadline?: number;
+  };
+  description?: string;
+  created_at?: number;
+  updateCardList?: () => Promise<void>;
 }
