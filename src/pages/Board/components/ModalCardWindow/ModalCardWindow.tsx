@@ -21,7 +21,7 @@ import {
 } from '../../../../redux/dataSlice';
 import { RootState } from '../../../../redux/store';
 import { deleteCard } from '../../../../utils/deleteCard';
-import { findListIdByCardId } from '../../../../utils/findListIdByCardId';
+import findListIdByCardId from '../../../../utils/findListIdByCardId';
 import s from './ModalCardWindow.module.scss';
 import CardModal from './components/ActionModal/CardModal';
 
