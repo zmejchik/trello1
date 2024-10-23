@@ -96,7 +96,6 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
 
           setIsDragging(false);
           await updateCardList(boardId, id, setCards);
-          setCards(cards);
         }
       } catch (error) {
         Swal.fire({

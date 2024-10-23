@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 
 export const useLogOut = (): { logOut: () => void } => {
@@ -6,7 +5,7 @@ export const useLogOut = (): { logOut: () => void } => {
 
   const logOut = (): void => {
     localStorage.removeItem('token');
-    Cookies.remove('refreshToken');
+    localStorage.removeItem('refreshToken');
     navigate('/login');
   };
 

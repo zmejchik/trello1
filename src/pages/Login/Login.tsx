@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Container, TextField, Button, Checkbox, FormControlLabel, Typography, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import Cookies from 'js-cookie';
 import api from '../../api/request';
 import loginFormStyles from './Loginstyle';
 
@@ -22,7 +21,7 @@ function LoginForm(): JSX.Element {
       // логіка після успішної авторизації
       if (response.result === 'Authorized') {
         localStorage.setItem('token', response.token);
-        Cookies.set('refreshToken', response.refreshToken, { secure: true });
+        localStorage.setItem('refreshToken', response.refreshToken);
         navigate('/');
       }
     } catch (error) {
