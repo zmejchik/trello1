@@ -154,7 +154,7 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
       // Update the card state with the new positions
       setTimeout(() => {
         setCards(newCards);
-      }, 100);
+      }, 500);
     }
   };
 
@@ -172,17 +172,26 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
         : card
     );
     setTimeout(() => {
-      newCards.forEach((card, index) => {
-        const newCard = { ...card, position: index + 1 };
-        Object.assign(card, newCard);
-      });
-      setCards(newCards);
+      const updatedCards = newCards.map((card, index) => ({
+        ...card,
+        position: index + 1,
+      }));
+      setCards(updatedCards);
     }, 0);
   };
   return (
     <>
       {cards.length > 0 && (
-        <div className={s.list} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler} onDrop={dropHandler}>
+        <div
+          className={s.list}
+          onDragOver={dragOverHandler}
+          onDragEnter={(event): void => {
+            setIsDragging(true);
+            dragEnterHandler(event, -1);
+          }}
+          onDragLeave={dragLeaveHandler}
+          onDrop={dropHandler}
+        >
           {isEditingNameList ? (
             <h2 className={s.listH2}>
               <FaClipboard className={s.listIcon} />
@@ -204,12 +213,7 @@ function List({ id, title: titleList, cards: cardsArray, setRenderList }: IList)
               />
             </h2>
           ) : (
-            <h2
-              className={s.list_title}
-              onDragOver={dragOverHandler}
-              onDrop={dropHandler}
-              onClick={(): void => setIsEditingNameList(true)}
-            >
+            <h2 className={s.list_title} onClick={(): void => setIsEditingNameList(true)}>
               {listName}
             </h2>
           )}

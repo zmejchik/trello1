@@ -1,5 +1,5 @@
-import React from 'react';
-import Login from '../../../pages/Login/Login';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: JSX.Element;
@@ -8,8 +8,15 @@ interface ProtectedRouteProps {
 function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element | null {
   const token = localStorage.getItem('token');
   const refreshToken = localStorage.getItem('refreshToken');
+  const navigate = useNavigate();
 
-  return token && refreshToken ? children : <Login />;
+  useEffect(() => {
+    if (!token || !refreshToken) {
+      navigate('/login');
+    }
+  }, [navigate, token, refreshToken]);
+
+  return token && refreshToken ? children : null;
 }
 
 export default ProtectedRoute;

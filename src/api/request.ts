@@ -25,6 +25,9 @@ instance.interceptors.request.use(
 
 const updateToken = async (): Promise<void> => {
   const refreshToken = localStorage.getItem('refreshToken');
+
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('token');
   if (refreshToken) {
     try {
       const response = await axios.post<{ token: string; refreshToken: string }>(`${api.baseURL}/refresh`, {
@@ -42,10 +45,10 @@ const updateToken = async (): Promise<void> => {
       });
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
-      window.location.href = '/login';
+      window.location.reload();
     }
   } else {
-    window.location.href = '/login';
+    window.location.reload();
   }
 };
 
@@ -55,16 +58,15 @@ instance.interceptors.response.use(
   },
   async (error) => {
     if (error.response && error.response.status === 401) {
-      if (!localStorage.getItem('token')) {
-        window.location.href = '/login';
-      } else {
+      if (localStorage.getItem('token')) {
         await updateToken().catch(() => {
           localStorage.clear();
           window.location.href = '/login';
+          throw new Error('Token refresh failed');
         });
       }
     } else if ([403, 404].includes(error.response.status)) {
-      window.location.href = '/';
+      throw new Error('Unauthorized or not found token');
     }
     return Promise.reject(error);
   }
